@@ -5,9 +5,10 @@
  * See http://bit.ly/12SHPLR for license details.
  */
 
-#include "Atom/atom.h"
+#include <cstdlib>
 
-namespace atom
+//! Execute main-function.
+int main( const int numberOfInputs, const char* inputArguments[ ] )
 {
-
-} // namespace atom
+	return EXIT_SUCCESS;
+}

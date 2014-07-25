@@ -5,8 +5,6 @@
  * See http://bit.ly/12SHPLR for license details.
  */
 
-#include "Atom/atom.h"
-
 namespace atom
 {
 

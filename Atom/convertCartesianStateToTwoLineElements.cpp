@@ -5,7 +5,7 @@
  * See http://bit.ly/12SHPLR for license details.
  */
 
-#include "Atom/atom.h"
+#include "Atom/convertCartesianStateToTwoLineElements.h"
 
 namespace atom
 {

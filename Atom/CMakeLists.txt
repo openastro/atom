@@ -86,13 +86,6 @@ macro(setup_unit_test_target target_name)
   add_test("${target_name}" "${TEST_ROOT}/${target_name}")
 endmacro(setup_unit_test_target)
 
-## Set the main sub-directories.
-#set(APPLICATIONMODES_DIR "/ApplicationModes")
-#set(ASTRODYNAMICS_DIR "/Astrodynamics")
-#set(DATABASE_DIR "/Database")
-#set(INPUTOUTPUT_DIR "/InputOutput")
-#set(MATHEMATICS_DIR "/Mathematics")
-
 # Include the top-level directories.
 include_directories(AFTER
   "${PROJECT_ROOT}"
@@ -184,19 +177,19 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pg")
 endif()
 
-## Set sub-directories.
-#set(SUBDIRS ${APPLICATIONMODES_DIR} ${ASTRODYNAMICS_DIR} 
-#            ${DATABASE_DIR} ${INPUTOUTPUT_DIR} ${MATHEMATICS_DIR})  
+# Add source files for Atom static library.
+set(ATOM_SOURCES
+  "${SOURCE_ROOT}/convertCartesianStateToTwoLineElements.cpp"
+)
 
-## Add sub-directories to CMake process.
-#foreach(CURRENT_SUBDIR ${SUBDIRS})
-#add_subdirectory("${SOURCE_ROOT}${CURRENT_SUBDIR}")
-#endforeach(CURRENT_SUBDIR)
+# Add Atom static library.
+add_library(atom STATIC ${ATOM_SOURCES})
+setup_library_target(atom)
 
 # Add Atom application.
-add_executable(atom "${SOURCE_ROOT}/atom.cpp")
-setup_executable_target(atom)
-target_link_libraries(atom
+add_executable(atom_main "${SOURCE_ROOT}/main.cpp")
+setup_executable_target(atom_main)
+target_link_libraries(atom_main
                       ${GSL_LIBRARIES}
                       ${SGP4DANRW_LIBRARY}
                       ${TUDAT_CORE_LIBRARIES} 
