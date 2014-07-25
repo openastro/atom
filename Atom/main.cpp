@@ -6,9 +6,23 @@
  */
 
 #include <cstdlib>
+#include <iostream>
+#include <fstream>
+
+#include "Atom/convertCartesianStateToTwoLineElements.h"
 
 //! Execute main-function.
 int main( const int numberOfInputs, const char* inputArguments[ ] )
 {
+	const double datum = 1.234567;
+
+	std::cout << atom::printElement( datum, 10, ' ' ) << std::endl;
+
+	std::ofstream file("/home/kartikkumar/Applications/atom/bin/test.txt");
+
+	file << atom::printElement( datum, 10, ' ' ) << std::endl;
+
+	file.close( );
+
 	return EXIT_SUCCESS;
 }

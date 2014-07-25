@@ -5,10 +5,15 @@
  * See http://bit.ly/12SHPLR for license details.
  */
 
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <string>
 #include <vector>
 
 #include <Eigen/Core>
  
+#include <gsl/gsl_multiroots.h>
 #include <gsl/gsl_vector.h>
 
 #include <libsgp4/Tle.h>
@@ -33,9 +38,11 @@ typedef Eigen::Matrix< double, 6, 1 > Vector6d;
  * \param epoch Epoch associated with Cartesian state.
  * \param earthGravitationalParameter Earth gravitational parameter [m^3 s^-2].
  * \param referenceTle Reference Two Line Elements. 
+ * \param solverStatusSummary Status of the non-linear solver printed as a table.
  * \param tolerance Tolerance used to check if root-finder has converged [default: 1.0e-8].
- * \param isPrintProgress Should the progress of the root-finder be printed to console? This is 
-            useful for debugging [default: false].
+ * \param maximumIterations Maximum number of solver iterations permitted. Once the solver reaches
+ *          this limit, the loop will be broken and the solver status will report that it has not
+ *          converged [default: 100]. 
  * \return TLE object that generates target Cartesian state when propagated with SGP4 propagator to
  *           target epoch.
  * \sa evaluateCartesianToTwoLineElementsSystem()
@@ -43,9 +50,10 @@ typedef Eigen::Matrix< double, 6, 1 > Vector6d;
 const Tle convertCartesianStateToTwoLineElements( const Vector6d cartesianState,
                                                   const DateTime epoch,
                                                   const double earthGravitationalParameter,
-                                                  const Tle referenceTle,                                                  
+                                                  const Tle referenceTle, 
+                                                  std::string& solverStatusSummary,                                                 
                                                   const double tolerance = 1.0e-8,
-                                                  const bool isPrintProgress = false );
+                                                  const int maximumIterations = 100 );
 
 //! Evaluate system of non-linear equations for converting Cartesian state to TLE.
 /*!
@@ -107,5 +115,44 @@ protected:
 
 private:
 };
+
+//! Print header for table containing summary of non-linear solver state.
+/*!
+ * Prints header to string for table containing summary of status of non-linear solver used to 
+ * convert a Cartesian state to a TLE.
+ * \return String containing table header for non-linear solver status.
+ * \sa convertCartesianStateToTwoLineElements()
+ */
+std::string printSolverStateTableHeader( );
+
+//! Print current state of non-linear solver for summary table.
+/*!
+ * Prints current state of non-linear solver used to convert a Cartesian state to a TLE, as row for 
+ * a summary table.
+ * \param iteration Current iteration of solver.
+ * \param solver Pointer to GSL solver.
+ * \return String containing row-data for non-linear solver status summary table.
+ */
+std::string printSolverState( int iteration, gsl_multiroot_fsolver* solver );
+
+//! Print data element to console.
+/*!
+ * Prints a specified data element to string, given a specified width and a separator character.
+ * This function is auxilliary to the print-functions used to the print the state of the non-linear
+ * solver.
+ * \tparam DataType Type for specified data element.
+ * \param datum Specified data element to print.
+ * \param width Width of datum printed to console, in terms of number of characters.
+ * \param separator Separator character, e.g., ",".
+ * \return String containing printed data element.
+ * \sa printSolverState().
+ */
+template< typename DataType > 
+inline std::string printElement( const DataType datum, const int width, const char separator )
+{
+    std::ostringstream buffer;
+    buffer << std::left << std::setw( width ) << std::setfill( separator ) << datum;
+    return buffer.str( );
+}
 
 } // namespace atom

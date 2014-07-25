@@ -149,6 +149,17 @@ else( )
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${SGP4DANRW_INCLUDE_DIR}\"")
 endif( )
 
+# Find Tudat Core library on local system.
+find_package(TudatCore 2 REQUIRED)
+
+# Include Tudat Core directories.
+# Set CMake flag to suppress Tudat Core warnings (platform-dependent solution).
+if(NOT APPLE)
+  include_directories(SYSTEM AFTER "${TUDAT_CORE_INCLUDE_DIR}")
+else( )
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${TUDAT_CORE_INCLUDE_DIR}\"")
+endif( )
+
 # If documentation should be built, find Doxygen package and setup config file.
 if(BUILD_DOCUMENTATION)
   find_package(Doxygen)
