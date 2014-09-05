@@ -190,6 +190,7 @@ endif()
 
 # Add source files for Atom static library.
 set(ATOM_SOURCES
+  "${SOURCE_ROOT}/atom.cpp"  
   "${SOURCE_ROOT}/convertCartesianStateToTwoLineElements.cpp"
 )
 
@@ -197,10 +198,27 @@ set(ATOM_SOURCES
 add_library(atom STATIC ${ATOM_SOURCES})
 setup_library_target(atom)
 
+# Add unit tests for Atom.
+set(ATOM_UNIT_TESTS
+  "${SOURCE_ROOT}/UnitTests/unitTestAtom.cpp"
+  "${SOURCE_ROOT}/UnitTests/unitTestConvertCartesianStateToTwoLineElements.cpp"  
+)
+
+# Add unit test.
+add_executable(test_atom ${ATOM_UNIT_TESTS})
+setup_unit_test_target(test_atom)
+target_link_libraries(test_atom
+                      atom
+                      ${GSL_LIBRARIES}                      
+                      ${SGP4DANRW_LIBRARY}                      
+                      ${TUDAT_CORE_LIBRARIES}                       
+                      ${Boost_LIBRARIES})
+
 # Add Atom application.
 add_executable(atom_main "${SOURCE_ROOT}/main.cpp")
 setup_executable_target(atom_main)
 target_link_libraries(atom_main
+                      atom
                       ${GSL_LIBRARIES}
                       ${SGP4DANRW_LIBRARY}
                       ${TUDAT_CORE_LIBRARIES} 

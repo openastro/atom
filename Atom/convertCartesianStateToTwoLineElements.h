@@ -5,6 +5,9 @@
  * See http://bit.ly/12SHPLR for license details.
  */
 
+#ifndef ATOM_CONVERT_CARTESIAN_STATE_TO_TWO_LINE_ELEMENTS_H
+#define ATOM_CONVERT_CARTESIAN_STATE_TO_TWO_LINE_ELEMENTS_H
+
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -16,13 +19,13 @@
 #include <gsl/gsl_multiroots.h>
 #include <gsl/gsl_vector.h>
 
+#include <libsgp4/Globals.h>
 #include <libsgp4/Tle.h>
+
+#include "Atom/generalDefinitions.H"
 
 namespace atom
 {
-
-//! Typedef for Vector6d.
-typedef Eigen::Matrix< double, 6, 1 > Vector6d;
 
 //! Convert Cartesian state to TLE (Two Line Elements).
 /*!
@@ -32,13 +35,15 @@ typedef Eigen::Matrix< double, 6, 1 > Vector6d;
  * non-linear system corresponds finding the TLE that, when evaluated at its epoch using the 
  * SGP4/SDP4 propagator, yields the target Cartesian state (within tolerance).
  *
- * Details of the underlying non-linear system and algorithm are catalogued by Kumar, et al. (2014).
+ * Details of the underlying non-linear system and algorithm are catalogued by 
+ * Kumar, et al. (2014).
  *
  * \param cartesianState Cartesian state.
  * \param epoch Epoch associated with Cartesian state.
- * \param earthGravitationalParameter Earth gravitational parameter [m^3 s^-2].
- * \param referenceTle Reference Two Line Elements. 
- * \param solverStatusSummary Status of the non-linear solver printed as a table.
+ * \param earthGravitationalParameter Earth gravitational parameter [m^3 s^-2] [default: mu_SGP].
+ * \param referenceTle Reference Two Line Elements. This is used as reference to construct the 
+ *         effective TLE for the given Cartesian state [default: 0-TLE].
+ * \param solverStatusSummary Status of the non-linear solver printed as a table [default: empty].
  * \param tolerance Tolerance used to check if root-finder has converged [default: 1.0e-8].
  * \param maximumIterations Maximum number of solver iterations permitted. Once the solver reaches
  *          this limit, the loop will be broken and the solver status will report that it has not
@@ -47,13 +52,14 @@ typedef Eigen::Matrix< double, 6, 1 > Vector6d;
  *           target epoch.
  * \sa evaluateCartesianToTwoLineElementsSystem()
  */
-const Tle convertCartesianStateToTwoLineElements( const Vector6d cartesianState,
-                                                  const DateTime epoch,
-                                                  const double earthGravitationalParameter,
-                                                  const Tle referenceTle, 
-                                                  std::string& solverStatusSummary,                                                 
-                                                  const double tolerance = 1.0e-8,
-                                                  const int maximumIterations = 100 );
+const Tle convertCartesianStateToTwoLineElements( 
+  const Vector6d cartesianState,
+  const DateTime epoch,
+  std::string& solverStatusSummary = emptyString,
+  const Tle referenceTle = Tle( ),
+  const double earthGravitationalParameter = kMU * 1.0e9,
+  const double tolerance = 1.0e-6,
+  const int maximumIterations = 100 );
 
 //! Evaluate system of non-linear equations for converting Cartesian state to TLE.
 /*!
@@ -65,7 +71,7 @@ const Tle convertCartesianStateToTwoLineElements( const Vector6d cartesianState,
  * where \f$\bar{x}^{new}\f$ is the new Cartesian state computed by updating the TLE mean elements 
  * and propagating the TLE using the SGP4 propagator, and \f$\bar{x}^{target}\f$ is the target
  * Cartesian state.
- * \param indepedentVariables Vector of independent variables used by the root-finder.
+ * \param independentVariables Vector of independent variables used by the root-finder.
  * \param parameters Parameters required to compute the objective function.
  * \param functionValues Vector of computed function values. 
  */
@@ -83,9 +89,9 @@ int evaluateCartesianToTwoLineElementsSystem( const gsl_vector* independentVaria
  * \param earthGravitationalParameter Earth gravitational parameter [m^3 s^-2].
  * \return New TLE with mean elements updated.
  */
-const Tle updateTleMeanElements( const Eigen::VectorXd newKeplerianElements, 
-    							 const Tle oldTle,
-    							 const double earthGravitationalParameter );
+const Tle updateTleMeanElements( const Vector6d newKeplerianElements, 
+    							               const Tle oldTle,
+    							               const double earthGravitationalParameter );
 
 //! Container of parameters used by Cartesian-to-TLE objective function.
 struct CartesianToTwoLineElementsObjectiveParameters
@@ -156,3 +162,5 @@ inline std::string printElement( const DataType datum, const int width, const ch
 }
 
 } // namespace atom
+
+#endif // ATOM_CONVERT_CARTESIAN_STATE_TO_TWO_LINE_ELEMENTS_H
