@@ -13,6 +13,8 @@
 
 #include <Eigen/Core>
 
+#include <libsgp4/DateTime.h>
+#include <libsgp4/Globals.h>
 #include <libsgp4/Tle.h>
 
 #include "Atom/generalDefinitions.h"
@@ -35,30 +37,32 @@ namespace atom
  * perturbed transfers around the Earth. As a result, the Earth's gravitational parameter is fixed,
  * as specified by the SGP4/SDP4 propagators (Vallado, 2006).
  * 
- * \param departureState Cartesian state vector at departure point [m; m/s].
+ * \param departureState Cartesian state vector at departure point. Note that this is BEFORE any
+ *          departure Delta V is applied! [m; m/s].
  * \param departureEpoch Modified Julian Date (MJD) of departure.
- * \param arrivalState Cartesian state vector at arrival point [m; m/s].
- * \param arrivalEpoch Modified Julian Date (MJD) of arrival.
+ * \param arrivalState Cartesian state vector at arrival point. Note that this is the target 
+ *          arrival state AFTER any arrival Delta V is applied! [m; m/s].
  * \param timeOfFlight Time-of-flight (TOF) for orbital transfer [s].
+ * \param departureDeltaVInitialGuess Initial guess for the departure Delta V. This serves as
+ *          initial guess for the internal root-finding procedure [m/s].
+ * \param solverStatusSummary Summary table containing status of non-linear solver per iteration. 
  * \param referenceDepartureTle Reference TLE at departure. This is used as reference when 
  *          converting the Cartesian state at departure to a TLE. [default: 0-TLE].
- * \param referenceArrivalTle Reference TLE at arrival. This is used as reference when 
- *          converting the Cartesian state at arrival to a TLE. [default: 0-TLE].
- * \param solverStatusSummary Summary table containing status of non-linear solver per iteration. 
+ * \param earthGravitationalParameter Earth gravitational parameter [m^3 s^-2] [default: mu_SGP].  
  * \param convergenceTolerance Convergence tolerance for non-linear solver [default: 1.0e-8].
  * \param maximumIterations Maximum number of iterations permitted for non-linear solver 
  *          [default: 100].
- * \return Departure and arrival DeltaVs (stored in that order).s
+ * \return Departure and arrival DeltaVs (stored in that order).
  */
 const std::pair< Eigen::Vector3d, Eigen::Vector3d > executeAtomSolver( 
     const Vector6d departureState, 
-    const double departureEpoch,
+    const DateTime departureEpoch,
     const Vector6d arrivalState, 
-    const double arrivalEpoch,
     const double timeOfFlight, 
+    const Eigen::Vector3d departureDeltaVInitialGuess,
+    std::string& solverStatusSummary = emptyString,        
     const Tle referenceDepartureTle = Tle( ),
-    const Tle referenceArrivalTle = Tle( ),
-    std::string& solverStatusSummary = emptyString,    
+    const double earthGravitationalParameter = kMU * 1.0e9,    
     const double convergenceTolerance = 1.0e-8,
     const int maximumIterations = 100 );
 

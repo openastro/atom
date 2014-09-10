@@ -40,10 +40,10 @@ namespace atom
  *
  * \param cartesianState Cartesian state.
  * \param epoch Epoch associated with Cartesian state.
- * \param earthGravitationalParameter Earth gravitational parameter [m^3 s^-2] [default: mu_SGP].
+ * \param solverStatusSummary Status of the non-linear solver printed as a table [default: empty]. 
  * \param referenceTle Reference Two Line Elements. This is used as reference to construct the 
  *         effective TLE for the given Cartesian state [default: 0-TLE].
- * \param solverStatusSummary Status of the non-linear solver printed as a table [default: empty].
+ * \param earthGravitationalParameter Earth gravitational parameter [m^3 s^-2] [default: mu_SGP]. 
  * \param tolerance Tolerance used to check if root-finder has converged [default: 1.0e-8].
  * \param maximumIterations Maximum number of solver iterations permitted. Once the solver reaches
  *          this limit, the loop will be broken and the solver status will report that it has not
@@ -58,7 +58,7 @@ const Tle convertCartesianStateToTwoLineElements(
   std::string& solverStatusSummary = emptyString,
   const Tle referenceTle = Tle( ),
   const double earthGravitationalParameter = kMU * 1.0e9,
-  const double tolerance = 1.0e-6,
+  const double tolerance = 1.0e-7,
   const int maximumIterations = 100 );
 
 //! Evaluate system of non-linear equations for converting Cartesian state to TLE.

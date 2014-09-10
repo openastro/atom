@@ -180,9 +180,7 @@ int evaluateCartesianToTwoLineElementsSystem( const gsl_vector* independentVaria
     // Evaluate system of non-linear equations and store function values.
     for ( unsigned int i = 0; i < 6; i++ )
     {
-        // gsl_vector_set( functionValues, i, ( newState[ i ] - targetState[ i ] ) 
-        //                                    * ( newState[ i ] - targetState[ i ] ) );
-        gsl_vector_set( functionValues, i, ( newState[ i ] - targetState[ i ] ) );        
+        gsl_vector_set( functionValues, i, newState[ i ] - targetState[ i ] );        
     }
 
     // Return success.

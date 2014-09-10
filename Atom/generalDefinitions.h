@@ -14,8 +14,13 @@ namespace atom
 //! Typedef for Vector6d.
 typedef Eigen::Matrix< double, 6, 1 > Vector6d;
 
+//! Typedef for pair of DeltaVs.
+typedef std::pair< Eigen::Vector3d, Eigen::Vector3d > DeltaVs;
+
 //! Declare empty string.
 static std::string emptyString = std::string( "" );    
+
+
 
 } // namespace atom
 
