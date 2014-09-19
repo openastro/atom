@@ -87,7 +87,7 @@ include_directories(AFTER "${PROJECT_ROOT}")
 # Find required libraries on local system.
 find_package(CATCH REQUIRED)
 find_package(GSL REQUIRED)
-find_package(SGP4DanRW 1 REQUIRED)
+find_package(SGP4 REQUIRED)
 
 # Include directories.
 # Set CMake flag to suppress warnings on Apple.
@@ -100,7 +100,7 @@ if(NOT APPLE)
 else(APPLE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${CATCH_INCLUDE_DIR}\"")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${GSL_INCLUDE_DIRS}\"")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${SGP4DANRW_INCLUDE_DIR}\"")  
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${SGP4_INCLUDE_DIR}\"")  
 endif(NOT APPLE)
 
 # If documentation should be built, find Doxygen package and setup config file.
