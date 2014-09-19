@@ -1,3 +1,6 @@
 [submodule "CMakeModules"]
 	path = CMakeModules
 	url = https://www.github.com/kartikkumar/CMakeModules
+[submodule "Catch"]
+	path = Catch
+	url = https://github.com/philsquared/Catch.git

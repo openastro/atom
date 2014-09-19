@@ -13,7 +13,7 @@ project(Atom)
 set(SOURCE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
 
 # Define the project root directory.
-set(PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
+set(PROJECT_ROOT "${SOURCE_ROOT}/..")
 
 # Set path to local CMake modules.
 set(CMAKE_MODULE_PATH ${PROJECT_ROOT}/CMakeModules)
@@ -56,25 +56,20 @@ if((NOT CMAKE_BUILD_TYPE) OR (CMAKE_BUILD_TYPE STREQUAL "Release"))
     set(CMAKE_BUILD_TYPE Release)
 elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
     message(STATUS "WARNING: building debug version!")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pg")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pg")
 endif()
 
 # Set lib and bin directories where static libraries, executable, unit tests are built.
 if(NOT LIB_ROOT)
   set(LIB_ROOT "${PROJECT_BINARY_DIR}/../lib")
 endif()
-if(NOT BIN_ROOT)
-  set(BIN_ROOT "${PROJECT_BINARY_DIR}/../bin")
-endif()
 if(NOT TEST_ROOT)
   set(TEST_ROOT "${PROJECT_BINARY_DIR}/../tests")
 endif()
 
 # Set the global macros for setting up targets.
-macro(setup_executable_target target_name)
-  set_property(TARGET ${target_name} PROPERTY RUNTIME_OUTPUT_DIRECTORY "${BIN_ROOT}")
-  install(TARGETS ${target_name} RUNTIME DESTINATION "${BIN_ROOT}")
-endmacro(setup_executable_target)
-
 macro(setup_library_target target_name)
   set_property(TARGET ${target_name} PROPERTY LIBRARY_OUTPUT_DIRECTORY "${LIB_ROOT}")
   set_property(TARGET ${target_name} PROPERTY ARCHIVE_OUTPUT_DIRECTORY "${LIB_ROOT}")
@@ -87,139 +82,67 @@ macro(setup_unit_test_target target_name)
 endmacro(setup_unit_test_target)
 
 # Include the top-level directories.
-include_directories(AFTER
-  "${PROJECT_ROOT}"
-)
+include_directories(AFTER "${PROJECT_ROOT}")
 
-# Find Eigen3 library on local system.
-find_package(Eigen3 REQUIRED)
-
-# Include Eigen3 directories.
-# Set CMake flag to suppress Eigen warnings (platform-dependent solution).
-if(NOT APPLE)
-  include_directories(SYSTEM AFTER "${EIGEN3_INCLUDE_DIR}")
-else( )
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${EIGEN3_INCLUDE_DIR}\"")
-endif( )
-
-# Configure Boost libraries.
-if(NOT Boost_USE_STATIC_LIBS)
-  set(Boost_USE_STATIC_LIBS ON)
-endif()
-if(NOT Boost_USE_MULTITHREADED)
-  set(Boost_USE_MULTITHREADED ON)
-endif()
-if(NOT Boost_USE_STATIC_RUNTIME)
-  set(Boost_USE_STATIC_RUNTIME ON)
-endif()
-
-# Find Boost libraries on local system.
-find_package(Boost 1.52.0 
-             COMPONENTS 
-             thread date_time system unit_test_framework filesystem regex serialization chrono
-             timer 
-             REQUIRED)
-
-# Include Boost directories.
-# Set CMake flag to suppress Boost warnings (platform-dependent solution).
-if(NOT APPLE)
-  include_directories(SYSTEM AFTER "${Boost_INCLUDE_DIRS}")
-else( )
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${Boost_INCLUDE_DIRS}\"")
-endif( )
-
-# Find GSL library on local system.
+# Find required libraries on local system.
+find_package(CATCH REQUIRED)
 find_package(GSL REQUIRED)
-
-# Include GSL directories.
-# Set CMake flag to suppress GSL warnings (platform-dependent solution).
-if(NOT APPLE)
-  include_directories(SYSTEM AFTER "${GSL_INCLUDE_DIRS}")
-else( )
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${GSL_INCLUDE_DIRS}\"")
-endif( )
-# Find SGP4DanRW library on local system.
 find_package(SGP4DanRW 1 REQUIRED)
 
-# Include SGP4DanRW directories.
-# Set CMake flag to suppress SGP4DanRW warnings (platform-dependent solution).
+# Include directories.
+# Set CMake flag to suppress warnings on Apple.
 if(NOT APPLE)
-  include_directories(SYSTEM AFTER "${SGP4DANRW_INCLUDE_DIR}")
-else( )
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${SGP4DANRW_INCLUDE_DIR}\"")
-endif( )
-
-# Find Tudat Core library on local system.
-find_package(TudatCore 2 REQUIRED)
-
-# Include Tudat Core directories.
-# Set CMake flag to suppress Tudat Core warnings (platform-dependent solution).
-if(NOT APPLE)
-  include_directories(SYSTEM AFTER "${TUDAT_CORE_INCLUDE_DIR}")
-else( )
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${TUDAT_CORE_INCLUDE_DIR}\"")
-endif( )
+  include_directories(SYSTEM AFTER 
+                      "${PROJECT_ROOT}"
+                      "${CATCH_INCLUDE_DIR}"
+                      "${GSL_INCLUDE_DIRS}" 
+                      "${SGP4DANRW_INCLUDE_DIR}")
+else(APPLE)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${CATCH_INCLUDE_DIR}\"")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${GSL_INCLUDE_DIRS}\"")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${SGP4DANRW_INCLUDE_DIR}\"")  
+endif(NOT APPLE)
 
 # If documentation should be built, find Doxygen package and setup config file.
-if(BUILD_DOCUMENTATION)
+if(BUILD_DOCS)
   find_package(Doxygen)
 
   if(NOT DOXYGEN_FOUND)
     message(FATAL_ERROR 
             "Doxygen is needed to build the documentation. Please install it correctly.")
-  endif()
+  endif(NOT DOXYGEN_FOUND)
 
   # Configure the Template Doxyfile for our specific project.
   configure_file(${PROJECT_ROOT}/Doxyfile.in 
                  ${PROJECT_BINARY_DIR}/Doxyfile @ONLY IMMEDIATE)
 
   # Add a custom target to run Doxygen when ever the project is built.
-  # IF you do NOT want the documentation to be generated EVERY time you build the project
-  # then leave out the 'ALL' keyword from the above command.
+  # If you do NOT want the documentation to be generated EVERY time you build the project
+  # then leave out the 'ALL' keyword from the command below.
   add_custom_target (docs ALL COMMAND ${DOXYGEN_EXECUTABLE} 
                      ${PROJECT_BINARY_DIR}/Doxyfile 
                      SOURCES ${PROJECT_BINARY_DIR}/Doxyfile)
-endif()
-
-# Set flags to profile using gprof.
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pg")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pg")
-endif()
+endif(BUILD_DOCS)
 
 # Add source files for Atom static library.
-set(ATOM_SOURCES
-  "${SOURCE_ROOT}/atom.cpp"  
-  "${SOURCE_ROOT}/convertCartesianStateToTwoLineElements.cpp"
-)
+# set(ATOM_SOURCES
+  # "${SOURCE_ROOT}/atom.cpp"  
+  # "${SOURCE_ROOT}/convertCartesianStateToTwoLineElements.cpp"
+  # "${SOURCE_ROOT}/generalDefinitions.cpp"  
+# )
 
-# Add Atom static library.
-add_library(atom STATIC ${ATOM_SOURCES})
-setup_library_target(atom)
+# # Add Atom static library.
+# add_library(atom STATIC ${ATOM_SOURCES})
+# setup_library_target(atom)
 
 # Add unit tests for Atom.
 set(ATOM_UNIT_TESTS
   "${SOURCE_ROOT}/UnitTests/unitTestAtom.cpp"
-  "${SOURCE_ROOT}/UnitTests/unitTestConvertCartesianStateToTwoLineElements.cpp"  
+  # "${SOURCE_ROOT}/UnitTests/unitTestConvertCartesianStateToTwoLineElements.cpp"  
+  # "${SOURCE_ROOT}/UnitTests/unitTestGeneralDefinitions.cpp"    
 )
 
 # Add unit test.
-add_executable(test_atom ${ATOM_UNIT_TESTS})
-setup_unit_test_target(test_atom)
-target_link_libraries(test_atom
-                      atom
-                      ${GSL_LIBRARIES}                      
-                      ${SGP4DANRW_LIBRARY}                      
-                      ${TUDAT_CORE_LIBRARIES}                       
-                      ${Boost_LIBRARIES})
-
-# Add Atom application.
-add_executable(atom_main "${SOURCE_ROOT}/main.cpp")
-setup_executable_target(atom_main)
-target_link_libraries(atom_main
-                      atom
-                      ${GSL_LIBRARIES}
-                      ${SGP4DANRW_LIBRARY}
-                      ${TUDAT_CORE_LIBRARIES} 
-                      ${Boost_LIBRARIES})
+add_executable(atom_tests ${ATOM_UNIT_TESTS})
+setup_unit_test_target(atom_tests)
+target_link_libraries(atom_tests)
