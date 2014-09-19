@@ -11,8 +11,8 @@ env:
 before_install:
   - sudo apt-get install libgsl0ldbl
   - sudo apt-get install automake
-  - git clone https://github.com/kartikkumar/sgp4deorbit
-  - cd sgp4deorbit
+  - git clone https://github.com/kartikkumar/sgp4deorbit sgp4
+  - cd sgp4
   - ./configure CC=gcc CXX=g++
   - make
   - cd ..
