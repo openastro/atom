@@ -10,9 +10,9 @@ env:
 
 before_install:
   - sudo apt-get install libgsl0ldbl
-  - curl -OL http://ftpmirror.gnu.org/automake/automake-1.14.tar.gz
-  - tar -xzf automake-1.14.tar.gz
-  - cd automake-1.14
+  - curl -OL http://ftp.gnu.org/gnu/automake/automake-1.14.1.tar.gz
+  - tar -xzf automake-1.14.1.tar.gz
+  - cd automake-1.14.1
   - ./configure 
   - make 
   - sudo make install
