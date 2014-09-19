@@ -9,13 +9,7 @@ env:
   - BUILD_TYPE=Release
 
 before_install:
-  - curl -OL http://mirror2.mirror.garr.it/mirrors/gnuftp/gnu/gsl/gsl-1.16.tar.gz
-  - tar -xzf gsl-1.16.tar.gz
-  - cd gsl-1.16
-  - ./configure
-  - make
-  - sudo make install 
-  - cd ..
+  - sudo apt-get install gsl-bin libgsl0-dbg libgsl0-dev libgsl0ldbl
   - curl -OL http://ftp.gnu.org/gnu/automake/automake-1.14.1.tar.gz
   - tar -xzf automake-1.14.1.tar.gz
   - cd automake-1.14.1
