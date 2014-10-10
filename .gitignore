@@ -32,7 +32,8 @@ build
 bin
 lib
 doc
-tests
+test
+temp
 
 # Project files
 *.sublime*

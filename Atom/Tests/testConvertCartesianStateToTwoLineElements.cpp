@@ -19,7 +19,7 @@
 
 namespace atom
 {
-namespace unit_tests
+namespace tests
 {
 
 typedef std::vector< REAL > Vector3;
@@ -59,5 +59,5 @@ TEST_CASE( "Convert Cartesian state to Two-Line-Elements", "[cartesian-to-TLE]")
              == Approx( cartesianState[ 5 ] ).epsilon( 1.0e-8 ) );
 }
 
-} // namespace unit_tests
+} // namespace tests
 } // namespace atom

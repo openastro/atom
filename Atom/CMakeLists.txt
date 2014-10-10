@@ -61,12 +61,12 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pg")
 endif()
 
-# Set lib and bin directories where static libraries, executable, unit tests are built.
+# Set lib and test directories static libraries and tests are placed.
 if(NOT LIB_ROOT)
   set(LIB_ROOT "${PROJECT_BINARY_DIR}/../lib")
 endif()
 if(NOT TEST_ROOT)
-  set(TEST_ROOT "${PROJECT_BINARY_DIR}/../tests")
+  set(TEST_ROOT "${PROJECT_BINARY_DIR}/../test")
 endif()
 
 # Set the global macros for setting up targets.
@@ -75,11 +75,11 @@ macro(setup_library_target target_name)
   set_property(TARGET ${target_name} PROPERTY ARCHIVE_OUTPUT_DIRECTORY "${LIB_ROOT}")
 endmacro(setup_library_target)
 
-macro(setup_unit_test_target target_name)
+macro(setup_test_target target_name)
   set_property(TARGET ${target_name} PROPERTY RUNTIME_OUTPUT_DIRECTORY "${TEST_ROOT}")
   get_property(CUSTOM_TEST_PROGRAM_NAME TARGET ${target_name} PROPERTY OUTPUT_NAME)
   add_test("${target_name}" "${TEST_ROOT}/${target_name}")
-endmacro(setup_unit_test_target)
+endmacro(setup_test_target)
 
 # Include the top-level directories.
 include_directories(AFTER "${PROJECT_ROOT}")
@@ -130,15 +130,14 @@ if(BUILD_DOCS)
                      SOURCES ${PROJECT_BINARY_DIR}/Doxyfile)
 endif(BUILD_DOCS)
 
-# Add unit tests for Atom.
-set(ATOM_UNIT_TESTS
-  "${SOURCE_ROOT}/UnitTests/unitTestAtom.cpp"
-  "${SOURCE_ROOT}/UnitTests/unitTestConvertCartesianStateToTwoLineElements.cpp"  
+# Add tests for Atom.
+set(ATOM_TESTS
+  "${SOURCE_ROOT}/Tests/testAtom.cpp"
+  "${SOURCE_ROOT}/Tests/testConvertCartesianStateToTwoLineElements.cpp"  
 )
 
-# Add unit test.
-add_executable(atom_tests ${ATOM_UNIT_TESTS})
-setup_unit_test_target(atom_tests)
+add_executable(atom_tests ${ATOM_TESTS})
+setup_test_target(atom_tests)
 target_link_libraries(atom_tests
                       ${SGP4_LIBRARY}
                       ${GSL_LIBRARIES})
