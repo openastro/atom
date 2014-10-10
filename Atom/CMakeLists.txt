@@ -94,17 +94,17 @@ find_package(SML REQUIRED)
 # Include directories.
 # Set CMake flag to suppress warnings on Apple.
 if(NOT APPLE)
-  include_directories(SYSTEM AFTER 
-                      "${PROJECT_ROOT}"
+  include_directories(AFTER SYSTEM
                       "${CATCH_INCLUDE_DIR}"
                       "${GSL_INCLUDE_DIRS}" 
-                      "${SGP4_INCLUDE_DIR}"
+                      "${SGP4_INCLUDE_DIRS}"
                       "${SAM_INCLUDE_DIRS}"
                       "${SML_INCLUDE_DIRS}")
+
 else(APPLE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${CATCH_INCLUDE_DIR}\"")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${GSL_INCLUDE_DIRS}\"")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${SGP4_INCLUDE_DIR}\"")  
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${SGP4_INCLUDE_DIRS}\"")  
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${SAM_INCLUDE_DIRS}\"")  
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${SML_INCLUDE_DIRS}\"")        
 endif(NOT APPLE)

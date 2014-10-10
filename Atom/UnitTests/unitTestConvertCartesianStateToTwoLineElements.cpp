@@ -15,7 +15,7 @@
 #include <libsgp4/SGP4.h>
 #include <libsgp4/Tle.h>
  
-#include "Atom/convertCartesianStatetoTwoLineElements.hpp"
+#include "Atom/convertCartesianStateToTwoLineElements.hpp"
 
 namespace atom
 {
