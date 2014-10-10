@@ -99,7 +99,8 @@ if(NOT APPLE)
                       "${CATCH_INCLUDE_DIR}"
                       "${GSL_INCLUDE_DIRS}" 
                       "${SGP4_INCLUDE_DIR}"
-                      "${SAM_INCLUDE_DIRS}")
+                      "${SAM_INCLUDE_DIRS}"
+                      "${SML_INCLUDE_DIRS}")
 else(APPLE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${CATCH_INCLUDE_DIR}\"")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${GSL_INCLUDE_DIRS}\"")
