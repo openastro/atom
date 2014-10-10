@@ -88,6 +88,8 @@ include_directories(AFTER "${PROJECT_ROOT}")
 find_package(CATCH REQUIRED)
 find_package(GSL REQUIRED)
 find_package(SGP4 REQUIRED)
+find_package(SAM REQUIRED)
+find_package(SML REQUIRED)
 
 # Include directories.
 # Set CMake flag to suppress warnings on Apple.
@@ -96,11 +98,14 @@ if(NOT APPLE)
                       "${PROJECT_ROOT}"
                       "${CATCH_INCLUDE_DIR}"
                       "${GSL_INCLUDE_DIRS}" 
-                      "${SGP4_INCLUDE_DIR}")
+                      "${SGP4_INCLUDE_DIR}"
+                      "${SAM_INCLUDE_DIRS}")
 else(APPLE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${CATCH_INCLUDE_DIR}\"")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${GSL_INCLUDE_DIRS}\"")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${SGP4_INCLUDE_DIR}\"")  
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${SAM_INCLUDE_DIRS}\"")  
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${SML_INCLUDE_DIRS}\"")        
 endif(NOT APPLE)
 
 # If documentation should be built, find Doxygen package and setup config file.
@@ -124,25 +129,15 @@ if(BUILD_DOCS)
                      SOURCES ${PROJECT_BINARY_DIR}/Doxyfile)
 endif(BUILD_DOCS)
 
-# Add source files for Atom static library.
-# set(ATOM_SOURCES
-  # "${SOURCE_ROOT}/atom.cpp"  
-  # "${SOURCE_ROOT}/convertCartesianStateToTwoLineElements.cpp"
-  # "${SOURCE_ROOT}/generalDefinitions.cpp"  
-# )
-
-# # Add Atom static library.
-# add_library(atom STATIC ${ATOM_SOURCES})
-# setup_library_target(atom)
-
 # Add unit tests for Atom.
 set(ATOM_UNIT_TESTS
   "${SOURCE_ROOT}/UnitTests/unitTestAtom.cpp"
-  # "${SOURCE_ROOT}/UnitTests/unitTestConvertCartesianStateToTwoLineElements.cpp"  
-  # "${SOURCE_ROOT}/UnitTests/unitTestGeneralDefinitions.cpp"    
+  "${SOURCE_ROOT}/UnitTests/unitTestConvertCartesianStateToTwoLineElements.cpp"  
 )
 
 # Add unit test.
 add_executable(atom_tests ${ATOM_UNIT_TESTS})
 setup_unit_test_target(atom_tests)
-target_link_libraries(atom_tests)
+target_link_libraries(atom_tests
+                      ${SGP4_LIBRARY}
+                      ${GSL_LIBRARIES})

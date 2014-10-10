@@ -6,16 +6,4 @@
 #define CATCH_CONFIG_MAIN
 
 #include <catch.hpp>
- 
-namespace atom
-{
-namespace unit_tests
-{
 
-TEST_CASE( "Dummy", "[dummy]")
-{
-    REQUIRE( 1 == 1 );
-}
-
-} // namespace unit_tests
-} // namespace atom
