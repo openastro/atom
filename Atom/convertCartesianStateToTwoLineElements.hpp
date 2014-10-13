@@ -52,6 +52,7 @@ namespace atom
  *                                     construct the effective TLE for the given Cartesian state
  *                                     [default: 0-TLE].
  * @param  earthGravitationalParameter Earth gravitational parameter [km^3 s^-2] [default: mu_SGP]
+ * @param  earthMeanRadius             Earth mean radius [km] [default: R_SGP]
  * @param  absoluteTolerance           Absolute tolerance used to check if root-finder has
  *                                     converged [default: 1.0e-10] (see Kumar, et al. (2014) for
  *                                     details on how convergence is tested)
@@ -73,6 +74,7 @@ const Tle convertCartesianStateToTwoLineElements(
     Integer& numberOfIterations,
     const Tle referenceTle = Tle( ),
     const Real earthGravitationalParameter = kMU,
+    const Real earthMeanRadius = kXKMPER,    
     const Real absoluteTolerance = 1.0e-10,
     const Real relativeTolerance = 1.0e-5,
     const Integer maximumIterations = 100 );
@@ -169,27 +171,28 @@ const Tle convertCartesianStateToTwoLineElements(
     Integer& numberOfIterations,
     const Tle referenceTle,
     const Real earthGravitationalParameter,
+    const Real earthMeanRadius,
     const Real absoluteTolerance,
     const Real relativeTolerance,
     const Integer maximumIterations )
 {
-    // Compute current state in Keplerian elements.
-    Vector keplerianElements = sam::convertCartesianToKeplerianElements(
-        cartesianState, earthGravitationalParameter );
-
     // Store reference TLE as new TLE and update epoch.
     Tle newTle = referenceTle;
     newTle.updateEpoch( epoch );  
 
     // Set up parameters for residual function.
     CartesianToTwoLineElementsParameters< Real, Vector > parameters( 
-        cartesianState, earthGravitationalParameter, newTle ); 
+        cartesianState, earthGravitationalParameter, earthMeanRadius, newTle ); 
 
     // Set up residual function.
     gsl_multiroot_function cartesianToTwoLineElementsFunction
         = { &computeCartesianToTwoLineElementResiduals< Real, Vector >, 
             6, 
             &parameters };
+
+    // Compute current state in Keplerian elements.
+    Vector keplerianElements = sam::convertCartesianToKeplerianElements(
+        cartesianState, earthGravitationalParameter );
 
     // Set initial guess.
     gsl_vector* initialGuess = gsl_vector_alloc( 6 );
@@ -215,12 +218,12 @@ const Tle convertCartesianStateToTwoLineElements(
     std::ostringstream summary;
 
     // Print header for summary table to buffer.
-    summary << printSolverStateTableHeader( );
+    summary << printCartesianToTleSolverStateTableHeader( );
 
     do
     {
         // Print current state of solver for summary table.
-        summary << printSolverState( counter, solver );
+        summary << printCartesianToTleSolverState( counter, solver );
 
         // Increment iteration counter.
         ++counter;
@@ -231,7 +234,7 @@ const Tle convertCartesianStateToTwoLineElements(
         // Check if solver is stuck; if it is stuck, break from loop.
         if ( solverStatus )   
         {
-            std::cerr << solverStatus << std::endl;
+            std::cerr << "GSL solver status: " << solverStatus << std::endl;
             std::cerr << summary.str( ) << std::endl;
             std::cerr << std::endl;
             throw std::runtime_error( "ERROR: Non-linear solver is stuck!" );
@@ -281,15 +284,22 @@ int computeCartesianToTwoLineElementResiduals( const gsl_vector* independentVari
                                                void* parameters, 
                                                gsl_vector* residuals )
 {
-    // Store reference TLE.
-    const Tle referenceTle 
+    // Store parameters locally.
+    const Vector targetState
         = static_cast< CartesianToTwoLineElementsParameters< Real, Vector >* >( 
-            parameters )->referenceTle;
+            parameters )->targetState;
 
-    // Store gravitational parameter.
     const Real earthGravitationalParameter 
         = static_cast< CartesianToTwoLineElementsParameters< Real, Vector >* >( 
             parameters )->earthGravitationalParameter;
+
+    const Real earthMeanRadius 
+        = static_cast< CartesianToTwoLineElementsParameters< Real, Vector >* >( 
+            parameters )->earthMeanRadius;
+
+    const Tle referenceTle 
+        = static_cast< CartesianToTwoLineElementsParameters< Real, Vector >* >( 
+            parameters )->referenceTle;
 
     // Update TLE mean elements and store as new TLE.
     Tle newTle = updateTleMeanElements( 
@@ -297,21 +307,20 @@ int computeCartesianToTwoLineElementResiduals( const gsl_vector* independentVari
 
     // Propagate new TLE to epoch of TLE.
     SGP4 sgp4( newTle );
-    Eci propagatedState = sgp4.FindPosition( 0.0 );
-
-    // Store target state.
-    const Vector targetState
-        = static_cast< CartesianToTwoLineElementsParameters< Real, Vector >* >( 
-            parameters )->targetState;
+    Eci propagatedState = sgp4.FindPosition( 0.0 ); 
 
     // Compute circular velocity at Earth radius (scaling fact used to non-dimensionalize 
     // velocities) [km/s].
-    const Real circularVelocityEarthRadius = sam::computeCircularVelocity( kXKMPER, kMU );
+    const Real circularVelocityEarthRadius = sam::computeCircularVelocity( 
+        kXKMPER, earthGravitationalParameter );
 
     // Evaluate system of non-linear equations and store residuals.    
-    gsl_vector_set( residuals, 0, ( propagatedState.Position( ).x - targetState[ 0 ] ) / kXKMPER );
-    gsl_vector_set( residuals, 1, ( propagatedState.Position( ).y - targetState[ 1 ] ) / kXKMPER );
-    gsl_vector_set( residuals, 2, ( propagatedState.Position( ).z - targetState[ 2 ] ) / kXKMPER );
+    gsl_vector_set( residuals, 0, 
+                    ( propagatedState.Position( ).x - targetState[ 0 ] ) / earthMeanRadius );
+    gsl_vector_set( residuals, 1, 
+                    ( propagatedState.Position( ).y - targetState[ 1 ] ) / earthMeanRadius );
+    gsl_vector_set( residuals, 2, 
+                    ( propagatedState.Position( ).z - targetState[ 2 ] ) / earthMeanRadius );
     gsl_vector_set( residuals, 3, 
                     ( propagatedState.Velocity( ).x - targetState[ 3 ] ) 
                     / circularVelocityEarthRadius );
@@ -396,24 +405,30 @@ public:
     /*!
      * Default constructor, taking parameters for Cartesian-to-Two-Line-Elements conversion.
      * @sa convertCartesianStateToTwoLineElements, computeCartesianToTwoLineElementResiduals
-     * @param aTargetState                  Target Cartesian state
-     * @param anEarthGravitationalParameter Earth gravitational parameter [m^3 s^-2]
+     * @param aTargetState                  Target Cartesian state [km; km/s]
+     * @param anEarthGravitationalParameter Earth gravitational parameter [km^3 s^-2]
+     * @param anEarthMeanRadius             Earth mean radius [km]
      * @param aReferenceTle                 Reference Two-Line-Elements
      */
     CartesianToTwoLineElementsParameters( 
         const Vector aTargetState,
         const Real anEarthGravitationalParameter,
+        const Real anEarthMeanRadius,
         const Tle aReferenceTle )
         : targetState( aTargetState ),
           earthGravitationalParameter( anEarthGravitationalParameter ),
+          earthMeanRadius( anEarthMeanRadius ),
           referenceTle( aReferenceTle )
     { }
 
-    //! Target state in Cartesian elements.
+    //! Target state in Cartesian elements [km; km/s].
     const Vector targetState;
 
-    //! Earth gravitational parameter [m^3 s^-2].
+    //! Earth gravitational parameter [km^3 s^-2].
     const Real earthGravitationalParameter;
+
+    //! Earth mean radius [km].
+    const Real earthMeanRadius;
 
     //! Reference TLE.
     const Tle referenceTle;
