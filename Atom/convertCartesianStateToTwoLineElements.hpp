@@ -39,31 +39,31 @@ namespace atom
  * Details of the underlying non-linear system and algorithm are catalogued by 
  * Kumar, et al. (2014).
  *
- * @sa      evaluateCartesianToTwoLineElementsSystem, DateTime
- * @tparam  Integer                     Type for integers 
- * @tparam  Real                        Type for reals
- * @tparam  Vector                      Type for vector of reals
- * @param   cartesianState              Cartesian state [km; km/s]
- * @param   epoch                       Epoch associated with Cartesian state, stored in a 
- *                                      DateTime object
- * @param   solverStatusSummary         Status of non-linear solver printed as a table 
- * @param   numberOfIterations          Number of iterations completed by solver
- * @param   referenceTle                Reference Two Line Elements. This is used as reference to 
- *                                      construct the effective TLE for the given Cartesian state 
- *                                      [default: 0-TLE].
- * @param   earthGravitationalParameter Earth gravitational parameter [km^3 s^-2] [default: mu_SGP]
- * @param   absoluteTolerance           Absolute tolerance used to check if root-finder has 
- *                                      converged [default: 1.0e-10] (see Kumar, et al. (2014) for
- *                                      details on how convergence is tested)
- * @param   relativeTolerance           Relative tolerance used to check if root-finder has 
- *                                      converged [default: 1.0e-5] (see Kumar, et al. (2014) for 
- *                                      details on how convergence is tested)
- * @param   maximumIterations           Maximum number of solver iterations permitted. Once the 
- *                                      solver reaches this limit, the loop will be broken and the 
- *                                      solver status will report that it has not converged 
- *                                      [default: 100].
- * @return                              TLE object that generates target Cartesian state when 
- *                                      propagated with SGP4 propagator to target epoch.
+ * @sa     evaluateCartesianToTwoLineElementsSystem, DateTime
+ * @tparam Integer                     Type for integers
+ * @tparam Real                        Type for reals
+ * @tparam Vector                      Type for vector of reals
+ * @param  cartesianState              Cartesian state [km; km/s]
+ * @param  epoch                       Epoch associated with Cartesian state, stored in a
+ *                                     DateTime object
+ * @param  solverStatusSummary         Status of non-linear solver printed as a table
+ * @param  numberOfIterations          Number of iterations completed by solver
+ * @param  referenceTle                Reference Two Line Elements. This is used as reference to
+ *                                     construct the effective TLE for the given Cartesian state
+ *                                     [default: 0-TLE].
+ * @param  earthGravitationalParameter Earth gravitational parameter [km^3 s^-2] [default: mu_SGP]
+ * @param  absoluteTolerance           Absolute tolerance used to check if root-finder has
+ *                                     converged [default: 1.0e-10] (see Kumar, et al. (2014) for
+ *                                     details on how convergence is tested)
+ * @param  relativeTolerance           Relative tolerance used to check if root-finder has
+ *                                     converged [default: 1.0e-5] (see Kumar, et al. (2014) for
+ *                                     details on how convergence is tested)
+ * @param  maximumIterations           Maximum number of solver iterations permitted. Once the
+ *                                     solver reaches this limit, the loop will be broken and the
+ *                                     solver status will report that it has not converged
+ *                                     [default: 100].
+ * @return                             TLE object that generates target Cartesian state when
+ *                                     propagated with SGP4 propagator to target epoch
  */
 template< typename Integer, typename Real, typename Vector >
 const Tle convertCartesianStateToTwoLineElements( 
@@ -92,22 +92,22 @@ const Tle convertCartesianStateToTwoLineElements(
  * string and number of iterations counter from the call (overload is necessary since non-const
  * references cannot be assigned default values in C++).
  *
- * @sa      convertCartesianStateToTwoLineElements, evaluateCartesianToTwoLineElementsSystem, 
- *          DateTime
- * @tparam  Integer                     Type for integers 
- * @tparam  Real                        Type for reals
- * @tparam  Vector                      Type for vector of reals
- * @param   cartesianState              Cartesian state [km; km/s]
- * @param   epoch                       Epoch associated with Cartesian state, stored in a 
- *                                      DateTime object
- * @return                              TLE object that generates target Cartesian state when 
- *                                      propagated with SGP4 propagator to target epoch.
+ * @sa     convertCartesianStateToTwoLineElements, evaluateCartesianToTwoLineElementsSystem,
+ *         DateTime
+ * @tparam Integer                     Type for integers
+ * @tparam Real                        Type for reals
+ * @tparam Vector                      Type for vector of reals
+ * @param  cartesianState              Cartesian state [km; km/s]
+ * @param  epoch                       Epoch associated with Cartesian state, stored in a
+ *                                     DateTime object
+ * @return                             TLE object that generates target Cartesian state when
+ *                                     propagated with SGP4 propagator to target epoch
  */
 template< typename Integer, typename Real, typename Vector >
 const Tle convertCartesianStateToTwoLineElements( 
     const Vector& cartesianState, const DateTime& epoch );
 
-//! Compute residual for converting Cartesian state to TLE.
+//! Compute residuals for converting Cartesian state to TLE.
 /*!
  * Evaluates system of non-linear equations and computes residuals to find TLE corresponding with 
  * target Cartesian state. The residual function, \f$R\f$ is computed as follows:
@@ -120,8 +120,8 @@ const Tle convertCartesianStateToTwoLineElements(
  * GSL library.
  * 
  * @sa convertCartesianStateToTwoLineElements
- * @tparam  Real                Type for reals
- * @tparam  Vector              Type for vector of reals
+ * @tparam Real                 Type for reals
+ * @tparam Vector               Type for vector of reals
  * @param  independentVariables Vector of independent variables used by the root-finder
  * @param  parameters           Parameters required to compute the objective function
  * @param  residuals            Vector of computed residuals
@@ -138,11 +138,11 @@ int computeCartesianToTwoLineElementResiduals( const gsl_vector* independentVari
  * uses the osculating elements to replace mean elements (converts units and computes mean anomaly
  * and mean motion).
  *
- * @tparam  Real                        Real type
- * @param   newKeplerianElements        New Keplerian elements
- * @param   oldTle                      TLE in which the mean elements are to be replaced
- * @param   earthGravitationalParameter Earth gravitational parameter [km^3 s^-2]
- * @return                              New TLE with mean elements updated.
+ * @tparam Real                        Real type
+ * @param  newKeplerianElements        New Keplerian elements
+ * @param  oldTle                      TLE in which the mean elements are to be replaced
+ * @param  earthGravitationalParameter Earth gravitational parameter [km^3 s^-2]
+ * @return                             New TLE with mean elements updated.
  */
 template< typename Real >
 const Tle updateTleMeanElements( const gsl_vector* newKeplerianElements, 
@@ -154,8 +154,8 @@ const Tle updateTleMeanElements( const gsl_vector* newKeplerianElements,
  * Data structure with parameters used to compute Cartesian-to-TLE residual function.
  *
  * @sa computeCartesianToTwoLineElementResiduals
- * @tparam  Real                Type for reals
- * @tparam  Vector              Type for vector of reals
+ * @tparam Real   Type for reals
+ * @tparam Vector Type for vector of reals
  */
 template< typename Real, typename Vector >
 struct CartesianToTwoLineElementsParameters;
@@ -174,7 +174,7 @@ const Tle convertCartesianStateToTwoLineElements(
     const Integer maximumIterations )
 {
     // Compute current state in Keplerian elements.
-    Vector keplerianElements = sam::convertCartesianToKeplerianElements< REAL, Vector >( 
+    Vector keplerianElements = sam::convertCartesianToKeplerianElements(
         cartesianState, earthGravitationalParameter );
 
     // Store reference TLE as new TLE and update epoch.
@@ -240,7 +240,6 @@ const Tle convertCartesianStateToTwoLineElements(
         // Check if root has been found (within tolerance).
         solverStatus = gsl_multiroot_test_delta( 
           solver->dx, solver->x, absoluteTolerance, relativeTolerance );
-        // solverStatus = gsl_multiroot_test_residual( solver->f, absoluteTolerance );
 
     } while ( solverStatus == GSL_CONTINUE && counter < maximumIterations );
 
@@ -272,11 +271,11 @@ const Tle convertCartesianStateToTwoLineElements(
 {
     std::string dummyString = "";
     Integer dummyInteger = 0;
-    return convertCartesianStateToTwoLineElements< Integer, Real, Vector >( 
+    return convertCartesianStateToTwoLineElements< Integer, Real >(
         cartesianState, epoch, dummyString, dummyInteger );
 }
 
-//! Compute residual for converting Cartesian state to TLE.
+//! Compute residuals for converting Cartesian state to TLE.
 template< typename Real, typename Vector >
 int computeCartesianToTwoLineElementResiduals( const gsl_vector* independentVariables, 
                                                void* parameters, 
@@ -397,9 +396,9 @@ public:
     /*!
      * Default constructor, taking parameters for Cartesian-to-Two-Line-Elements conversion.
      * @sa convertCartesianStateToTwoLineElements, computeCartesianToTwoLineElementResiduals
-     * @param aTargetState                     Target Cartesian state
-     * @param anEarthGravitationalParameter    Earth gravitational parameter [m^3 s^-2]
-     * @param aReferenceTle                    Reference TLE
+     * @param aTargetState                  Target Cartesian state
+     * @param anEarthGravitationalParameter Earth gravitational parameter [m^3 s^-2]
+     * @param aReferenceTle                 Reference Two-Line-Elements
      */
     CartesianToTwoLineElementsParameters( 
         const Vector aTargetState,

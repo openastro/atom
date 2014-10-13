@@ -3,8 +3,8 @@
  * All rights reserved.
  */
 
-#define REAL double
 #define INTEGER int
+#define REAL double
 
 #include <string>
 #include <vector>
