@@ -133,6 +133,7 @@ endif(BUILD_DOCS)
 # Add tests for Atom.
 set(ATOM_TESTS
   "${SOURCE_ROOT}/Tests/testAtom.cpp"
+  "${SOURCE_ROOT}/Tests/testAtomSolver.cpp"
   "${SOURCE_ROOT}/Tests/testConvertCartesianStateToTwoLineElements.cpp"  
 )
 

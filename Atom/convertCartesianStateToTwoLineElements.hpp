@@ -243,7 +243,6 @@ const Tle convertCartesianStateToTwoLineElements(
         // Check if root has been found (within tolerance).
         solverStatus = gsl_multiroot_test_delta( 
           solver->dx, solver->x, absoluteTolerance, relativeTolerance );
-
     } while ( solverStatus == GSL_CONTINUE && counter < maximumIterations );
 
     // Save number of iterations.
