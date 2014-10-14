@@ -129,15 +129,16 @@ const std::pair< Vector, Vector > executeAtomSolver(
 //! Compute residuals to execute Atom solver.
 /*!
  * Evaluates system of non-linear equations and computes residuals to execute the Atom solver. The
- * residual function, \f$R\f$ is computed as follows:
+ * residual function, \f$\bar{R}\f$ is computed as follows:
  * The system of non-linear equations used is:
  *  \f[ 
- *      R = 0 = \bar{r}^{arrival,computed} - \bar{r}^{arrival,target}
+ *      \bar{R} = 0 = \frac{\bar{r}_{new} - \bar{r}_{target}}{R_{Earth}}
  *  \f]
- * where \f$\bar{r}^{arrival,computed}\f$ is the Cartesian position computed by propagating the 
+ * where \f$\bar{r}_{new}\f$ is the Cartesian position computed by propagating the 
  * initial, prescribed state under the action of an initial impulsive Delta V, by a prescribed 
- * time-of-flight, and \f$\bar{x}^{arrival,target}\f$ is the target Cartesian position. Note that 
- * the residuals are used to drive a root-finding process that uses the GSL library.
+ * time-of-flight, \f$\bar{r}_{target}\f$ is the target Cartesian position and 
+ * \f$R_{Earth}\f$ is the mean radius of the Earth. Note that the residuals are non-dimensional.
+ * They are used to drive a root-finding process that uses the GSL library.
  *
  * @sa executeAtomSolver
  * @tparam Integer              Type for integers 

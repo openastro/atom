@@ -112,14 +112,19 @@ const Tle convertCartesianStateToTwoLineElements(
 //! Compute residuals for converting Cartesian state to TLE.
 /*!
  * Evaluates system of non-linear equations and computes residuals to find TLE corresponding with 
- * target Cartesian state. The residual function, \f$R\f$ is computed as follows:
+ * target Cartesian state. The residual function, \f$\bar{R}\f$ is computed as follows:
  *  \f[ 
- *      R = 0 = \bar{x}^{new} - \bar{x}^{target}
+ *      \bar{R} = 0 = \begin{pmatrix}
+ *                      \frac{\bar{r}_{new} - \bar{r}_{target}}{R_{Earth}}\\
+ *                      \frac{\bar{v}_{new} - \bar{v}_{target}}{V_{c,Earth}}\\
+ *                    \end{pmatrix}
  *  \f]
- * where \f$\bar{x}^{new}\f$ is the new Cartesian state computed by updating the TLE mean elements 
- * and propagating the TLE using the SGP4 propagator, and \f$\bar{x}^{target}\f$ is the target
- * Cartesian state. Note that the residuals are used to drive a root-finding process that uses the
- * GSL library.
+ * where \f$\bar{r}_{new}\f$ and \f$\bar{v}_{new}\f$ are the new Cartesian position and velocity 
+ * vectors, computed by updating the TLE mean elements and propagating the TLE using the SGP4 
+ * propagator, \f$\bar{r}_{target}\f$ anf \f$\bar{v}_{target}\f$ are the target Cartesian position 
+ * and velocity vectors, \f$R_{Earth}\f$ is the mean radius of the Earth, and \f$V_{c,Earth}\f$ is 
+ * the circular velocity at \f$R_{Earth}\f$. Note that the residuals are non-dimensional. They are
+ * used to drive a root-finding process that uses the GSL library.
  * 
  * @sa convertCartesianStateToTwoLineElements
  * @tparam Real                 Type for reals

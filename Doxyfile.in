@@ -807,7 +807,7 @@ EXCLUDE_SYMLINKS       = NO
 # Note that the wildcards are matched against the file with absolute path, so to
 # exclude all test directories for example use the pattern */test/*
 
-EXCLUDE_PATTERNS       = */UnitTests/*
+EXCLUDE_PATTERNS       = */Tests/*
 EXCLUDE_PATTERNS       += */ConfigurationFiles/*
 EXCLUDE_PATTERNS       += */.git/*
 
@@ -822,7 +822,7 @@ EXCLUDE_PATTERNS       += */.git/*
 
 EXCLUDE_SYMBOLS        = boost
 EXCLUDE_SYMBOLS        += Eigen
-EXCLUDE_SYMBOLS        += atom::unit_tests
+EXCLUDE_SYMBOLS        += atom::tests
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or directories
 # that contain example code fragments that are included (see the \include
@@ -1610,7 +1610,7 @@ PAPER_TYPE             = a4
 # If left blank no extra packages will be included.
 # This tag requires that the tag GENERATE_LATEX is set to YES.
 
-EXTRA_PACKAGES         =
+EXTRA_PACKAGES         = amsmath
 
 # The LATEX_HEADER tag can be used to specify a personal LaTeX header for the
 # generated LaTeX document. The header should contain everything until the first
