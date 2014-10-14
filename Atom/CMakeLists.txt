@@ -61,13 +61,13 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pg")
 endif()
 
-# Set lib and test directories static libraries and tests are placed.
+# Set lib and test directories, where static libraries and tests are placed.
 if(NOT LIB_ROOT)
   set(LIB_ROOT "${PROJECT_BINARY_DIR}/../lib")
-endif()
+endif(NOT LIB_ROOT)
 if(NOT TEST_ROOT)
   set(TEST_ROOT "${PROJECT_BINARY_DIR}/../test")
-endif()
+endif(NOT TEST_ROOT)
 
 # Set the global macros for setting up targets.
 macro(setup_library_target target_name)
