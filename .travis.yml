@@ -9,6 +9,7 @@ env:
   - BUILD_TYPE=Release
 
 before_install:
+  - sudo apt-get install libeigen3-dev
   - sudo apt-get install gsl-bin libgsl0-dbg libgsl0-dev libgsl0ldbl
   - curl -OL http://ftp.gnu.org/gnu/automake/automake-1.14.1.tar.gz
   - tar -xzf automake-1.14.1.tar.gz
@@ -43,7 +44,7 @@ before_install:
   - cd ..  
 
 install:
-  - cmake -HAtom -Bbuild -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+  - cmake -HAtom -Bbuild -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_TESTS=on -DBUILD_WITH_EIGEN=on
   - cd build
   - make
   - cd ..
