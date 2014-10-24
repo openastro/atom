@@ -3,12 +3,6 @@
  * All rights reserved.
  */
 
-#define INTEGER int
-#define REAL double
-
-#include <iomanip>
-#include <limits>
-
 #include <string>
 #include <utility>
 #include <vector>
@@ -24,31 +18,32 @@ namespace atom
 namespace tests
 {
 
-typedef std::vector< REAL > Vector;
-typedef std::pair< Vector, Vector > Velocities;
+typedef double Real;
+typedef std::vector< Real > Vector3;
+typedef std::pair< Vector3, Vector3 > Velocities;
 
 TEST_CASE( "Execute Atom solver", "[atom-solver]")
 {
     // Set departure position [km].
-    Vector departurePosition( 3 );
+    Vector3 departurePosition( 3 );
     departurePosition[ 0 ] = -3680.20448307549;
     departurePosition[ 1 ] = -2573.44661796266;
     departurePosition[ 2 ] = 5800.72628190982;
 
     // Set departure velocity [km/s].
-    Vector departureVelocity( 3 );
+    Vector3 departureVelocity( 3 );
     departureVelocity[ 0 ] = 6.44661660560979;
     departureVelocity[ 1 ] = -1.14788435945363;
     departureVelocity[ 2 ] = 3.44659369332744;
 
     // Set arrival position [km].
-    Vector arrivalPosition( 3 );
+    Vector3 arrivalPosition( 3 );
     arrivalPosition[ 0 ] = 4496.59209320659;
     arrivalPosition[ 1 ] = 2339.99159226651;
     arrivalPosition[ 2 ] = -5455.56445926525;
 
     // Set arrival velocity [km/s].
-    Vector arrivalVelocity( 3 );
+    Vector3 arrivalVelocity( 3 );
     arrivalVelocity[ 0 ] = -5.7447123573464;
     arrivalVelocity[ 1 ] = 1.63941146365299;
     arrivalVelocity[ 2 ] = -4.17792707643158;
@@ -57,25 +52,24 @@ TEST_CASE( "Execute Atom solver", "[atom-solver]")
     DateTime departureEpoch( 63548650522376360 );
 
     // Time-of-flight [s].
-    const REAL timeOfFlight = 1000.0;
+    const Real timeOfFlight = 1000.0;
             
     SECTION( "Test case with no iterations" )
     {
         // Execute Atom solver to compute departure and arrival velocities that bridge the given
         // positions.
         std::string dummyString = "";
-        INTEGER numberOfIterations = 0;
-        const Velocities velocities = executeAtomSolver< INTEGER, REAL, Vector >( 
-            departurePosition, 
-            departureEpoch, 
-            arrivalPosition, 
-            timeOfFlight, 
-            departureVelocity,
-            dummyString,
-            numberOfIterations ); 
+        int numberOfIterations = 0;
+        const Velocities velocities = executeAtomSolver( departurePosition, 
+                                                         departureEpoch, 
+                                                         arrivalPosition, 
+                                                         timeOfFlight, 
+                                                         departureVelocity,
+                                                         dummyString,
+                                                         numberOfIterations ); 
 
         // Check that departure and arrival velocities match results.
-        for ( INTEGER i = 0; i < 3; i++ )
+        for ( int i = 0; i < 3; i++ )
         {
             REQUIRE( departureVelocity[ i ] == Approx( velocities.first[ i ] ).epsilon( 1.0e-6 ) );
             REQUIRE( arrivalVelocity[ i ] == Approx( velocities.second[ i ] ).epsilon( 1.0e-6 ) );
@@ -89,7 +83,7 @@ TEST_CASE( "Execute Atom solver", "[atom-solver]")
     {
         // Set initial guess for departure velocity [km/s]. Arbitrary values are added to the 
         // expected departure velocity.
-        Vector departureVelocityGuess( 3 );
+        Vector3 departureVelocityGuess( 3 );
         departureVelocityGuess[ 0 ] = departureVelocity[ 0 ] + 0.013;
         departureVelocityGuess[ 1 ] = departureVelocity[ 1 ] - 0.074;
         departureVelocityGuess[ 2 ] = departureVelocity[ 2 ] + 0.026;
@@ -97,18 +91,17 @@ TEST_CASE( "Execute Atom solver", "[atom-solver]")
         // Execute Atom solver to compute departure and arrival velocities that bridge the given
         // positions.
         std::string dummyString = "";
-        INTEGER numberOfIterations = 0;
-        const Velocities velocities = executeAtomSolver< INTEGER, REAL, Vector >( 
-            departurePosition, 
-            departureEpoch, 
-            arrivalPosition, 
-            timeOfFlight, 
-            departureVelocityGuess,
-            dummyString,
-            numberOfIterations );
+        int numberOfIterations = 0;
+        const Velocities velocities = executeAtomSolver( departurePosition, 
+                                                         departureEpoch, 
+                                                         arrivalPosition, 
+                                                         timeOfFlight, 
+                                                         departureVelocityGuess,
+                                                         dummyString,
+                                                         numberOfIterations );
 
         // Check that departure and arrival velocities match results.
-        for ( INTEGER i = 0; i < 3; i++ )
+        for ( int i = 0; i < 3; i++ )
         {
             REQUIRE( departureVelocity[ i ] == Approx( velocities.first[ i ] ).epsilon( 1.0e-6 ) );
             REQUIRE( arrivalVelocity[ i ] == Approx( velocities.second[ i ] ).epsilon( 1.0e-6 ) );

@@ -9,6 +9,7 @@
 #include <sstream>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include <gsl/gsl_multiroots.h>
 #include <gsl/gsl_vector.h>
@@ -42,9 +43,8 @@ namespace atom
  * Kumar, et al. (2014).
  *
  * @sa     convertCartesianStateToTwoLineElements
- * @tparam Integer                     Type for integers 
  * @tparam Real                        Type for reals
- * @tparam Vector                      Type for vector of reals
+ * @tparam Vector3                     Type for 3-vector of reals
  * @param  departurePosition           Cartesian position vector at departure [km]
  * @param  departureEpoch              Modified Julian Date (MJD) of departure
  * @param  arrivalPosition             Cartesian position vector at arrival [km]
@@ -68,21 +68,21 @@ namespace atom
  *                                     [default: 100].
  * @return                             Departure and arrival velocities (stored in that order)
  */
-template< typename Integer, typename Real, typename Vector >
-const std::pair< Vector, Vector > executeAtomSolver( 
-    const Vector& departurePosition, 
-    const DateTime departureEpoch,
-    const Vector& arrivalPosition, 
+template< typename Real, typename Vector3 >
+const std::pair< Vector3, Vector3 > executeAtomSolver( 
+    const Vector3& departurePosition, 
+    const DateTime& departureEpoch,
+    const Vector3& arrivalPosition, 
     const Real timeOfFlight, 
-    const Vector& departureVelocityGuess,
+    const Vector3& departureVelocityGuess,
     std::string& solverStatusSummary,
-    Integer& numberOfIterations,
-    const Tle referenceTle = Tle( ),
+    int& numberOfIterations,
+    const Tle& referenceTle = Tle( ),
     const Real earthGravitationalParameter = kMU,
     const Real earthMeanRadius = kXKMPER,    
     const Real absoluteTolerance = 1.0e-10,
     const Real relativeTolerance = 1.0e-5,
-    const Integer maximumIterations = 100 );
+    const int maximumIterations = 100 );
 
 //! Execute Atom solver.
 /*!
@@ -107,9 +107,8 @@ const std::pair< Vector, Vector > executeAtomSolver(
  * references cannot be assigned default values in C++).
  *
  * @sa     convertCartesianStateToTwoLineElements
- * @tparam Integer                Type for integers 
  * @tparam Real                   Type for reals
- * @tparam Vector                 Type for vector of reals
+ * @tparam Vector3                Type for 3-vector of reals
  * @param  departurePosition      Cartesian position vector at departure [km]
  * @param  departureEpoch         Modified Julian Date (MJD) of departure
  * @param  arrivalPosition        Cartesian position vector at arrival [km]
@@ -118,13 +117,13 @@ const std::pair< Vector, Vector > executeAtomSolver(
  *                                guess for the internal root-finding procedure) [km/s]
  * @return                        Departure and arrival velocities (stored in that order)
  */
-template< typename Integer, typename Real, typename Vector >
-const std::pair< Vector, Vector > executeAtomSolver( 
-    const Vector& departurePosition, 
-    const DateTime departureEpoch,
-    const Vector& arrivalPosition, 
+template< typename Real, typename Vector3 >
+const std::pair< Vector3, Vector3 > executeAtomSolver( 
+    const Vector3& departurePosition, 
+    const DateTime& departureEpoch,
+    const Vector3& arrivalPosition, 
     const Real timeOfFlight, 
-    const Vector& departureVelocityGuess );
+    const Vector3& departureVelocityGuess );
 
 //! Compute residuals to execute Atom solver.
 /*!
@@ -141,15 +140,13 @@ const std::pair< Vector, Vector > executeAtomSolver(
  * They are used to drive a root-finding process that uses the GSL library.
  *
  * @sa executeAtomSolver
- * @tparam Integer              Type for integers 
  * @tparam Real                 Type for reals
- * @tparam Vector               Type for vector of reals
  * @param  independentVariables Vector of independent variables used by the root-finder
  * @param  parameters           Parameters required to compute the objective function
  * @param  residuals            Vector of computed residuals
  * @return                      GSL flag indicating success or failure
  */
-template< typename Integer, typename Real, typename Vector >
+template< typename Real >
 int computeAtomResiduals( const gsl_vector* independentVariables,
                           void* parameters, 
                           gsl_vector* residuals );
@@ -159,51 +156,47 @@ int computeAtomResiduals( const gsl_vector* independentVariables,
  * Data structure with parameters used to compute Atom residual function.
  *
  * @sa computeAtomResiduals
- * @tparam Integer Type for integers  
  * @tparam Real    Type for reals
- * @tparam Vector  Type for vector of reals
+ * @tparam Vector3 Type for 3-vector of reals
  */
-template< typename Integer, typename Real, typename Vector >
+template< typename Real, typename Vector3 >
 struct AtomParameters;
 
 //! Execute Atom solver.
-template< typename Integer, typename Real, typename Vector >
-const std::pair< Vector, Vector > executeAtomSolver( 
-    const Vector& departurePosition, 
-    const DateTime departureEpoch,
-    const Vector& arrivalPosition, 
+template< typename Real, typename Vector3 >
+const std::pair< Vector3, Vector3 > executeAtomSolver( 
+    const Vector3& departurePosition, 
+    const DateTime& departureEpoch,
+    const Vector3& arrivalPosition, 
     const Real timeOfFlight, 
-    const Vector& departureVelocityGuess,
+    const Vector3& departureVelocityGuess,
     std::string& solverStatusSummary,
-    Integer& numberOfIterations,
-    const Tle referenceTle,
+    int& numberOfIterations,
+    const Tle& referenceTle,
     const Real earthGravitationalParameter,
     const Real earthMeanRadius,    
     const Real absoluteTolerance,
     const Real relativeTolerance,
-    const Integer maximumIterations )
+    const int maximumIterations )
 {
     // Set up parameters for residual function.
-    AtomParameters< Integer, Real, Vector > parameters( departurePosition, 
-                                                        departureEpoch, 
-                                                        arrivalPosition, 
-                                                        timeOfFlight,
-                                                        earthGravitationalParameter, 
-                                                        earthMeanRadius, 
-                                                        referenceTle, 
-                                                        absoluteTolerance, 
-                                                        relativeTolerance, 
-                                                        maximumIterations ); 
+    AtomParameters< Real, Vector3 > parameters( departurePosition, 
+                                                departureEpoch, 
+                                                arrivalPosition, 
+                                                timeOfFlight,
+                                                earthGravitationalParameter, 
+                                                earthMeanRadius, 
+                                                referenceTle, 
+                                                absoluteTolerance, 
+                                                relativeTolerance, 
+                                                maximumIterations ); 
 
     // Set up residual function.
-    gsl_multiroot_function atomFunction
-        = { &computeAtomResiduals< Integer, Real, Vector >, 
-            3, 
-            &parameters };
+    gsl_multiroot_function atomFunction = { &computeAtomResiduals< Real >, 3, &parameters };
 
     // Set initial guess.
     gsl_vector* initialGuess = gsl_vector_alloc( 3 );
-    for ( Integer i = 0; i < 3; i++ )
+    for ( int i = 0; i < 3; i++ )
     {
         gsl_vector_set( initialGuess, i, departureVelocityGuess[ i ] );      
     }
@@ -218,8 +211,8 @@ const std::pair< Vector, Vector > executeAtomSolver(
     gsl_multiroot_fsolver_set( solver, &atomFunction, initialGuess );
 
      // Declare current solver status and iteration counter.
-    Integer solverStatus = false;
-    Integer counter = 0;
+    int solverStatus = false;
+    int counter = 0;
 
     // Set up buffer to store solver status summary table.
     std::ostringstream summary;
@@ -263,31 +256,31 @@ const std::pair< Vector, Vector > executeAtomSolver(
     solverStatusSummary = summary.str( );
 
     // Store final departure velocity.
-    Vector departureVelocity( 3 );
-    for ( Integer i = 0; i < 3; i++ )
+    Vector3 departureVelocity( 3 );
+    for ( int i = 0; i < 3; i++ )
     {
         departureVelocity[ i ] = gsl_vector_get( solver->x, i );
     }
 
     // Set departure state [km/s].
-    Vector departureState( 6 );
-    for ( Integer i = 0; i < 3; i++ )
+    std::vector< Real > departureState( 6 );
+    for ( int i = 0; i < 3; i++ )
     {
         departureState[ i ] = departurePosition[ i ];
     }
-    for ( Integer i = 0; i < 3; i++ )
+    for ( int i = 0; i < 3; i++ )
     {
         departureState[ i + 3 ] = departureVelocity[ i ];
     }
 
     // Convert departure state to TLE.
     std::string dummyString = "";
-    Integer dummyInteger = 0;
-    const Tle departureTle = convertCartesianStateToTwoLineElements< Integer, Real >(
+    int dummyint = 0;
+    const Tle departureTle = convertCartesianStateToTwoLineElements< Real >(
         departureState, 
         departureEpoch, 
         dummyString, 
-        dummyInteger, 
+        dummyint, 
         referenceTle, 
         earthGravitationalParameter, 
         earthMeanRadius, 
@@ -299,7 +292,7 @@ const std::pair< Vector, Vector > executeAtomSolver(
     SGP4 sgp4( departureTle );
     Eci arrivalState = sgp4.FindPosition( timeOfFlight );
 
-    Vector arrivalVelocity( 3 );
+    Vector3 arrivalVelocity( 3 );
     arrivalVelocity[ 0 ] = arrivalState.Velocity( ).x;
     arrivalVelocity[ 1 ] = arrivalState.Velocity( ).y;
     arrivalVelocity[ 2 ] = arrivalState.Velocity( ).z;
@@ -309,92 +302,101 @@ const std::pair< Vector, Vector > executeAtomSolver(
     gsl_vector_free( initialGuess );
 
     // Return departure and arrival velocities.
-    return std::make_pair< Vector, Vector >( departureVelocity, arrivalVelocity );
+    return std::make_pair< Vector3, Vector3 >( departureVelocity, arrivalVelocity );
 }
 
 //! Execute Atom solver.
-template< typename Integer, typename Real, typename Vector >
-const std::pair< Vector, Vector > executeAtomSolver( 
-    const Vector& departurePosition, 
-    const DateTime departureEpoch,
-    const Vector& arrivalPosition, 
+template< typename Real, typename Vector3 >
+const std::pair< Vector3, Vector3 > executeAtomSolver( 
+    const Vector3& departurePosition, 
+    const DateTime& departureEpoch,
+    const Vector3& arrivalPosition, 
     const Real timeOfFlight, 
-    const Vector& departureVelocityGuess )
+    const Vector3& departureVelocityGuess )
 {
     std::string dummyString = "";
-    Integer dummyInteger = 0;
+    int dummyint = 0;
     return executeAtomSolver( departurePosition, 
                               departureEpoch, 
                               arrivalPosition, 
                               timeOfFlight, 
                               departureVelocityGuess,
                               dummyString, 
-                              dummyInteger );
+                              dummyint );
 }
 
 //! Compute residuals to execute Atom solver.
-template< typename Integer, typename Real, typename Vector >
+template< typename Real >
 int computeAtomResiduals( const gsl_vector* independentVariables,
                           void* parameters, 
                           gsl_vector* residuals )
 {
     // Store parameters locally.
-    const Vector departurePosition
-        = static_cast< AtomParameters< Integer, Real, Vector >* >( parameters )->departurePosition;
+    const std::vector< Real > departurePosition
+        = static_cast< AtomParameters< Real, std::vector< Real > >* >( 
+            parameters )->departurePosition;
 
     const DateTime departureEpoch
-        = static_cast< AtomParameters< Integer, Real, Vector >* >( parameters )->departureEpoch;
+        = static_cast< AtomParameters< Real, std::vector< Real > >* >( 
+            parameters )->departureEpoch;
 
-    const Vector targetPosition
-        = static_cast< AtomParameters< Integer, Real, Vector >* >( parameters )->targetPosition;
+    const std::vector< Real > targetPosition
+        = static_cast< AtomParameters< Real, std::vector< Real > >* >( 
+            parameters )->targetPosition;
 
     const Real timeOfFlight
-        = static_cast< AtomParameters< Integer, Real, Vector >* >( parameters )->timeOfFlight;
+        = static_cast< AtomParameters< Real, std::vector< Real > >* >( 
+            parameters )->timeOfFlight;
 
     const Real earthGravitationalParameter
-        = static_cast< AtomParameters< Integer, Real, Vector >* >( 
+        = static_cast< AtomParameters< Real, std::vector< Real > >* >( 
             parameters )->earthGravitationalParameter;
 
     const Real earthMeanRadius
-        = static_cast< AtomParameters< Integer, Real, Vector >* >( parameters )->earthMeanRadius;
+        = static_cast< AtomParameters< Real, std::vector< Real > >* >( 
+            parameters )->earthMeanRadius;
 
     const Tle referenceTle
-        = static_cast< AtomParameters< Integer, Real, Vector >* >( parameters )->referenceTle;
+        = static_cast< AtomParameters< Real, std::vector< Real > >* >( 
+            parameters )->referenceTle;
 
     const Real absoluteTolerance
-        = static_cast< AtomParameters< Integer, Real, Vector >* >( parameters )->absoluteTolerance;
+        = static_cast< AtomParameters< Real, std::vector< Real > >* >( 
+            parameters )->absoluteTolerance;
 
     const Real relativeTolerance
-        = static_cast< AtomParameters< Integer, Real, Vector >* >( parameters )->relativeTolerance;
+        = static_cast< AtomParameters< Real, std::vector< Real > >* >( 
+            parameters )->relativeTolerance;
 
-    const Integer maximumIterations
-        = static_cast< AtomParameters< Integer, Real, Vector >* >( parameters )->maximumIterations;
+    const int maximumIterations
+        = static_cast< AtomParameters< Real, std::vector< Real > >* >( 
+            parameters )->maximumIterations;
 
     // Set Departure state [km; km/s].
-    Vector departureVelocity( 3 );
-    for ( Integer i = 0; i < 3; i++ )
+    std::vector< Real > departureVelocity( 3 );
+    for ( int i = 0; i < 3; i++ )
     {
         departureVelocity[ i ] = gsl_vector_get( independentVariables, i );
     }
 
-    Vector departureState( 6 );
-    for ( Integer i = 0; i < 3; i++ )
+    std::vector< Real > departureState( 6 );
+    for ( int i = 0; i < 3; i++ )
     {
         departureState[ i ] = departurePosition[ i ];
     }
-    for ( Integer i = 0; i < 3; i++ )
+    for ( int i = 0; i < 3; i++ )
     {
         departureState[ i + 3 ] = departureVelocity[ i ];
     }
 
     // Convert departure state to TLE.
     std::string dummyString = "";
-    Integer dummyInteger = 0;
-    const Tle departureTle = convertCartesianStateToTwoLineElements< Integer, Real >(
+    int dummyint = 0;
+    const Tle departureTle = convertCartesianStateToTwoLineElements(
         departureState, 
         departureEpoch, 
         dummyString, 
-        dummyInteger, 
+        dummyint, 
         referenceTle, 
         earthGravitationalParameter, 
         earthMeanRadius, 
@@ -418,7 +420,7 @@ int computeAtomResiduals( const gsl_vector* independentVariables,
 }
 
 //! Parameter struct used by Atom residual function.
-template< typename Integer, typename Real, typename Vector >
+template< typename Real, typename Vector3 >
 struct AtomParameters
 { 
 public:
@@ -439,16 +441,16 @@ public:
      * @param someMaximumIterations         Maximum number of solver iterations permitted
      */
     AtomParameters(
-        const Vector aDeparturePosition,
-        const DateTime aDepartureEpoch,
-        const Vector aTargetPosition,
+        const Vector3& aDeparturePosition,
+        const DateTime& aDepartureEpoch,
+        const Vector3& aTargetPosition,
         const Real aTimeOfFlight,
         const Real anEarthGravitationalParameter,
         const Real anEarthMeanRadius,        
-        const Tle aReferenceTle,
+        const Tle& aReferenceTle,
         const Real anAbsoluteTolerance,
         const Real aRelativeTolerance,
-        const Integer someMaximumIterations )
+        const int someMaximumIterations )
         : departurePosition( aDeparturePosition ),
           departureEpoch( aDepartureEpoch ),
           targetPosition( aTargetPosition ),
@@ -462,13 +464,13 @@ public:
     { }
 
     //! Departure position in Cartesian elements [km].
-    const Vector departurePosition;
+    const Vector3 departurePosition;
 
     //! Departure epoch in Modified Julian Date (MJD).
     const DateTime departureEpoch;
 
     //! Target position in Cartesian elements [km].
-    const Vector targetPosition;
+    const Vector3 targetPosition;
 
     //! Time-of-Flight (TOF) [s].
     const Real timeOfFlight;
@@ -489,7 +491,7 @@ public:
     const Real relativeTolerance;
 
     //! Maximum number of iterations.
-    const Integer maximumIterations;
+    const int maximumIterations;
 
 protected:
 

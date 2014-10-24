@@ -3,9 +3,6 @@
  * All rights reserved.
  */
 
-#define INTEGER int
-#define REAL double
-
 #include <string>
 #include <vector>
 
@@ -23,12 +20,13 @@ namespace atom
 namespace tests
 {
 
-typedef std::vector< REAL > Vector;
+typedef double Real;
+typedef std::vector< Real > Vector6;
 
 TEST_CASE( "Convert Cartesian state to Two-Line-Elements", "[cartesian-to-TLE]")
 {
     // Set target cartesian state [km; km/s].
-    Vector cartesianState( 6 );
+    Vector6 cartesianState( 6 );
     cartesianState[ 0 ] = -7.1e3;
     cartesianState[ 1 ] = 2.7e3;
     cartesianState[ 2 ] = 1.3e3;
@@ -37,7 +35,7 @@ TEST_CASE( "Convert Cartesian state to Two-Line-Elements", "[cartesian-to-TLE]")
     cartesianState[ 5 ] = 5.5;
 
     // Convert Cartesian state to TLE. Note that the epoch is arbitrary.
-    Tle convertedTle = convertCartesianStateToTwoLineElements< INTEGER, REAL, Vector >( 
+    Tle convertedTle = convertCartesianStateToTwoLineElements< Real, Vector6 >( 
         cartesianState, DateTime( ) );
 
     // Propagate the converted TLE to the epoch of the TLE. This generates a Cartesian state.

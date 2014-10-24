@@ -64,7 +64,7 @@ inline std::string printAtomSolverState(
 
 //! Print data element to console.
 /*!
- * Prints a specified data element to string, given a specified width and a separator character.
+ * Prints a specified data element to string, given a specified width and a filler character.
  * This function is auxilliary to the print-functions used to the print the state of the non-linear
  * solver.
  * 
@@ -72,21 +72,13 @@ inline std::string printAtomSolverState(
  * @tparam DataType  Type for specified data element
  * @param  datum     Specified data element to print
  * @param  width     Width of datum printed to console, in terms of number of characters
- * @param  separator Separator character, e.g., ","
+ * @param  filler    Character used to fill fixed-width, [default: ' ']
  * @return           String containing printed data element
  */
 template< typename DataType > 
-inline std::string printElement( const DataType datum, const int width, const char separator );
-
+inline std::string printElement( const DataType datum, const int width, const char filler = ' ' );
 
 //! Print Cartesian-state-to-TLE converter solver summary table header.
-/*!
- * Prints header to string for table containing summary of status of non-linear solver used to 
- * convert a Cartesian state to a TLE.
- *
- * @sa convertCartesianStateToTwoLineElements 
- * @return String containing table header for non-linear solver status.
- */
 inline std::string printCartesianToTleSolverStateTableHeader( )
 {
     std::ostringstream headerBuffer;
@@ -162,10 +154,10 @@ inline std::string printAtomSolverState(
 
 //! Print data element to console.
 template< typename DataType > 
-inline std::string printElement( const DataType datum, const int width, const char separator )
+inline std::string printElement( const DataType datum, const int width, const char filler )
 {
     std::ostringstream buffer;
-    buffer << std::left << std::setw( width ) << std::setfill( separator ) << datum;
+    buffer << std::left << std::setw( width ) << std::setfill( filler ) << datum;
     return buffer.str( );
 }
 
