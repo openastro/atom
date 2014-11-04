@@ -31,10 +31,11 @@
 build
 bin
 lib
-doc
+docs
 test
 temp
 debug
+external
 
 # Project files
 *.sublime*
