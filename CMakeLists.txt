@@ -172,25 +172,27 @@ if(NOT FORCE_DEPENDENCIES_BUILD)
   find_package(SGP4)
 endif(NOT FORCE_DEPENDENCIES_BUILD)
 
-ExternalProject_Add(sgp4-deorbit
-  PREFIX ${MYEXT_PATH}/SGP4  
-  #--Download step--------------  
-  URL https://github.com/kartikkumar/sgp4deorbit/archive/master.zip
-  TIMEOUT 30
-  #--Update/Patch step----------
-  #--Configure step-------------
-  #--Build step-----------------
-  BUILD_IN_SOURCE 1
-  #--Install step---------------
-  INSTALL_COMMAND ""
-  #--Output logging-------------
-  LOG_DOWNLOAD ON
-)
-ExternalProject_Get_Property(sgp4-deorbit source_dir)
-set(SGP4_INCLUDE_DIRS ${source_dir} CACHE INTERNAL "Path to include folder for SGP4")
-set(SGP4_LIBRARY_DIR ${source_dir}/libsgp4 CACHE INTERNAL "Path to library folder for SGP4")
-set(SGP4_LIBRARY "sgp4")
-link_directories(${SGP4_LIBRARY_DIR})
+if(NOT SGP4_FOUND)
+  ExternalProject_Add(sgp4-deorbit
+    PREFIX ${MYEXT_PATH}/SGP4
+    #--Download step--------------
+    URL https://github.com/kartikkumar/sgp4deorbit/archive/master.zip
+    TIMEOUT 30
+    #--Update/Patch step----------
+    #--Configure step-------------
+    #--Build step-----------------
+    BUILD_IN_SOURCE 1
+    #--Install step---------------
+    INSTALL_COMMAND ""
+    #--Output logging-------------
+    LOG_DOWNLOAD ON
+  )
+  ExternalProject_Get_Property(sgp4-deorbit source_dir)
+  set(SGP4_INCLUDE_DIRS ${source_dir} CACHE INTERNAL "Path to include folder for SGP4")
+  set(SGP4_LIBRARY_DIR ${source_dir}/libsgp4 CACHE INTERNAL "Path to library folder for SGP4")
+  set(SGP4_LIBRARY "sgp4")
+  link_directories(${SGP4_LIBRARY_DIR})
+endif(NOT SGP4_FOUND)
 
 if(NOT APPLE)
   include_directories(SYSTEM AFTER "${SGP4_INCLUDE_DIRS}")
@@ -202,26 +204,28 @@ if(NOT FORCE_DEPENDENCIES_BUILD)
   find_package(GSL)
 endif(NOT FORCE_DEPENDENCIES_BUILD)
 
-ExternalProject_Add(gsl-lib
-  PREFIX ${MYEXT_PATH}/GSL  
-  #--Download step--------------  
-  URL https://github.com/ampl/gsl/archive/master.zip
-  #TEMP URL https://github.com/<temp>/gsl/archive/master.zip
-  TIMEOUT 30
-  #--Update/Patch step----------
-  #--Configure step-------------
-  #--Build step-----------------
-  BUILD_IN_SOURCE 1
-  #--Install step---------------
-  INSTALL_COMMAND ""
-  #--Output logging-------------
-  LOG_DOWNLOAD ON
-)
-ExternalProject_Get_Property(gsl-lib source_dir)
-set(GSL_INCLUDE_DIRS ${source_dir} CACHE INTERNAL "Path to include folder for SGP4")
-set(GSL_LIBRARY_DIRS ${source_dir} CACHE INTERNAL "Path to library folder for SGP4")
-set(GSL_LIBRARY "gsl" "gslcblas")
-link_directories(${GSL_LIBRARY_DIRS})
+if(NOT GSL_FOUND)
+  ExternalProject_Add(gsl-lib
+    PREFIX ${MYEXT_PATH}/GSL
+    #--Download step--------------
+    URL https://github.com/ampl/gsl/archive/master.zip
+    #TEMP URL https://github.com/<temp>/gsl/archive/master.zip
+    TIMEOUT 30
+    #--Update/Patch step----------
+    #--Configure step-------------
+    #--Build step-----------------
+    BUILD_IN_SOURCE 1
+    #--Install step---------------
+    INSTALL_COMMAND ""
+    #--Output logging-------------
+    LOG_DOWNLOAD ON
+  )
+  ExternalProject_Get_Property(gsl-lib source_dir)
+  set(GSL_INCLUDE_DIRS ${source_dir} CACHE INTERNAL "Path to include folder for SGP4")
+  set(GSL_LIBRARY_DIRS ${source_dir} CACHE INTERNAL "Path to library folder for SGP4")
+  set(GSL_LIBRARIES "gsl" "gslcblas")
+  link_directories(${GSL_LIBRARY_DIRS})
+endif(NOT GSL_FOUND)
 
 if(NOT APPLE)
   include_directories(SYSTEM AFTER "${GSL_INCLUDE_DIRS}")
@@ -324,17 +328,28 @@ if(BUILD_TESTS)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem \"${EIGEN3_INCLUDE_DIR}\"")
     endif(NOT APPLE)
 
-   string(REPLACE "Elements" "ElementsEigen" TESTS_SRC_EIGEN "${MYPROJ_TEST_SRC}")
-   string(REPLACE "Solver" "SolverEigen" TESTS_SRC_EIGEN "${MYPROJ_TEST_SRC}")  
-   add_executable(${MYPROJ_TEST}_eigen ${TESTS_SRC_EIGEN})
-   add_dependencies(${MYPROJ_TEST}_eigen sgp4-deorbit gsl-lib)  
-   target_link_libraries(${MYPROJ_TEST}_eigen ${SGP4_LIBRARY} ${GSL_LIBRARY})
-   add_test(NAME ${MYPROJ_TEST}_eigen COMMAND "${MYTESTS_PATH}/${MYPROJ_TEST}_eigen") 
+    string(REPLACE "testConvertCartesianStateToTwoLineElements" 
+      "testConvertCartesianStateToTwoLineElementsEigen" TESTS_SRC_EIGEN "${MYPROJ_TEST_SRC}")
+    string(REPLACE "testAtomSolver" "testAtomSolverEigen" TESTS_SRC_EIGEN "${MYPROJ_TEST_SRC}")  
+    add_executable(${MYPROJ_TEST}_eigen ${TESTS_SRC_EIGEN})
+    if(NOT SGP4_FOUND)
+      add_dependencies(${MYPROJ_TEST}_eigen sgp4-deorbit)
+    endif(NOT SGP4_FOUND)
+    if(NOT GSL_FOUND)
+      add_dependencies(${MYPROJ_TEST}_eigen gsl-lib)
+    endif(NOT GSL_FOUND)
+    target_link_libraries(${MYPROJ_TEST}_eigen ${SGP4_LIBRARY} ${GSL_LIBRARIES})
+    add_test(NAME ${MYPROJ_TEST}_eigen COMMAND "${MYTESTS_PATH}/${MYPROJ_TEST}_eigen") 
   endif(BUILD_TESTS_WITH_EIGEN)
 
   add_executable(${MYPROJ_TEST} ${MYPROJ_TEST_SRC})
-  add_dependencies(${MYPROJ_TEST} sgp4-deorbit gsl-lib)
-  target_link_libraries(${MYPROJ_TEST} ${SGP4_LIBRARY} ${GSL_LIBRARY})
+    if(NOT SGP4_FOUND)
+      add_dependencies(${MYPROJ_TEST} sgp4-deorbit)
+    endif(NOT SGP4_FOUND)
+    if(NOT GSL_FOUND)
+      add_dependencies(${MYPROJ_TEST} gsl-lib)
+    endif(NOT GSL_FOUND)   
+  target_link_libraries(${MYPROJ_TEST} ${SGP4_LIBRARY} ${GSL_LIBRARIES})
   add_test(NAME ${MYPROJ_TEST} COMMAND "${MYTESTS_PATH}/${MYPROJ_TEST}")
 endif(BUILD_TESTS)
 

@@ -142,12 +142,13 @@ const std::pair< Vector3, Vector3 > executeAtomSolver(
  *
  * @sa executeAtomSolver
  * @tparam Real                 Type for reals
+ * @tparam Vector3              Type for 3-vector of reals
  * @param  independentVariables Vector of independent variables used by the root-finder
  * @param  parameters           Parameters required to compute the objective function
  * @param  residuals            Vector of computed residuals
  * @return                      GSL flag indicating success or failure
  */
-template< typename Real >
+template< typename Real, typename Vector3 >
 int computeAtomResiduals( const gsl_vector* independentVariables,
                           void* parameters, 
                           gsl_vector* residuals );
@@ -193,7 +194,10 @@ const std::pair< Vector3, Vector3 > executeAtomSolver(
                                                 maximumIterations ); 
 
     // Set up residual function.
-    gsl_multiroot_function atomFunction = { &computeAtomResiduals< Real >, 3, &parameters };
+    gsl_multiroot_function atomFunction
+        = {
+            &computeAtomResiduals< Real, Vector3 >, 3, &parameters
+          };
 
     // Set initial guess.
     gsl_vector* initialGuess = gsl_vector_alloc( 3 );
@@ -327,51 +331,43 @@ const std::pair< Vector3, Vector3 > executeAtomSolver(
 }
 
 //! Compute residuals to execute Atom solver.
-template< typename Real >
+template< typename Real, typename Vector3 >
 int computeAtomResiduals( const gsl_vector* independentVariables,
                           void* parameters, 
                           gsl_vector* residuals )
 {
     // Store parameters locally.
-    const std::vector< Real > departurePosition
-        = static_cast< AtomParameters< Real, std::vector< Real > >* >( 
-            parameters )->departurePosition;
+    const Vector3 departurePosition = static_cast< AtomParameters< Real, Vector3 >* >( 
+        parameters )->departurePosition;
 
     const DateTime departureEpoch
-        = static_cast< AtomParameters< Real, std::vector< Real > >* >( 
-            parameters )->departureEpoch;
+        = static_cast< AtomParameters< Real, Vector3 >* >( parameters )->departureEpoch;
 
-    const std::vector< Real > targetPosition
-        = static_cast< AtomParameters< Real, std::vector< Real > >* >( 
-            parameters )->targetPosition;
+    const Vector3 targetPosition = static_cast< AtomParameters< Real, Vector3 >* >( 
+        parameters )->targetPosition;
 
     const Real timeOfFlight
-        = static_cast< AtomParameters< Real, std::vector< Real > >* >( 
+        = static_cast< AtomParameters< Real, Vector3 >* >( 
             parameters )->timeOfFlight;
 
     const Real earthGravitationalParameter
-        = static_cast< AtomParameters< Real, std::vector< Real > >* >( 
+        = static_cast< AtomParameters< Real, Vector3 >* >( 
             parameters )->earthGravitationalParameter;
 
     const Real earthMeanRadius
-        = static_cast< AtomParameters< Real, std::vector< Real > >* >( 
-            parameters )->earthMeanRadius;
+        = static_cast< AtomParameters< Real, Vector3 >* >( parameters )->earthMeanRadius;
 
     const Tle referenceTle
-        = static_cast< AtomParameters< Real, std::vector< Real > >* >( 
-            parameters )->referenceTle;
+        = static_cast< AtomParameters< Real, Vector3 >* >( parameters )->referenceTle;
 
     const Real absoluteTolerance
-        = static_cast< AtomParameters< Real, std::vector< Real > >* >( 
-            parameters )->absoluteTolerance;
+        = static_cast< AtomParameters< Real, Vector3 >* >( parameters )->absoluteTolerance;
 
     const Real relativeTolerance
-        = static_cast< AtomParameters< Real, std::vector< Real > >* >( 
-            parameters )->relativeTolerance;
+        = static_cast< AtomParameters< Real, Vector3 >* >( parameters )->relativeTolerance;
 
     const int maximumIterations
-        = static_cast< AtomParameters< Real, std::vector< Real > >* >( 
-            parameters )->maximumIterations;
+        = static_cast< AtomParameters< Real, Vector3 >* >( parameters )->maximumIterations;
 
     // Set Departure state [km; km/s].
     std::vector< Real > departureVelocity( 3 );

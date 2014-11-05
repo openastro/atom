@@ -128,12 +128,13 @@ const Tle convertCartesianStateToTwoLineElements(  const Vector6& cartesianState
  * 
  * @sa convertCartesianStateToTwoLineElements
  * @tparam Real                 Type for reals
+ * @tparam Vector6              Type for 6-vector of reals
  * @param  independentVariables Vector of independent variables used by the root-finder
  * @param  parameters           Parameters required to compute the objective function
  * @param  residuals            Vector of computed residuals
  * @return                      GSL flag indicating success or failure
  */
-template< typename Real >
+template< typename Real, typename Vector6 >
 int computeCartesianToTwoLineElementResiduals( const gsl_vector* independentVariables, 
                                                void* parameters, 
                                                gsl_vector* residuals );
@@ -190,12 +191,12 @@ const Tle convertCartesianStateToTwoLineElements(
 
     // Set up residual function.
     gsl_multiroot_function cartesianToTwoLineElementsFunction
-        = { &computeCartesianToTwoLineElementResiduals< Real >, 
+        = { &computeCartesianToTwoLineElementResiduals< Real, Vector6 >,
             6, 
             &parameters };
 
     // Compute current state in Keplerian elements.
-    Vector6 keplerianElements = sam::convertCartesianToKeplerianElements(
+    const Vector6 keplerianElements = sam::convertCartesianToKeplerianElements(
         cartesianState, earthGravitationalParameter );
 
     // Set initial guess.
@@ -282,26 +283,26 @@ const Tle convertCartesianStateToTwoLineElements( const Vector6& cartesianState,
 }
 
 //! Compute residuals for converting Cartesian state to TLE.
-template< typename Real >
+template< typename Real, typename Vector6 >
 int computeCartesianToTwoLineElementResiduals( const gsl_vector* independentVariables, 
                                                void* parameters, 
                                                gsl_vector* residuals )
 {
     // Store parameters locally.
-    const std::vector< Real > targetState
-        = static_cast< CartesianToTwoLineElementsParameters< Real, std::vector< Real > >* >( 
+    const Vector6 targetState
+        = static_cast< CartesianToTwoLineElementsParameters< Real, Vector6 >* >(
             parameters )->targetState;
 
     const Real earthGravitationalParameter 
-        = static_cast< CartesianToTwoLineElementsParameters< Real, std::vector< Real > >* >( 
+        = static_cast< CartesianToTwoLineElementsParameters< Real, Vector6 >* >(
             parameters )->earthGravitationalParameter;
 
     const Real earthMeanRadius 
-        = static_cast< CartesianToTwoLineElementsParameters< Real, std::vector< Real > >* >( 
+        = static_cast< CartesianToTwoLineElementsParameters< Real, Vector6 >* >(
             parameters )->earthMeanRadius;
 
     const Tle referenceTle 
-        = static_cast< CartesianToTwoLineElementsParameters< Real, std::vector< Real > >* >( 
+        = static_cast< CartesianToTwoLineElementsParameters< Real, Vector6 >* >(
             parameters )->referenceTle;
 
     // Update TLE mean elements and store as new TLE.

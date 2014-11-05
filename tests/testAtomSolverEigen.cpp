@@ -51,7 +51,7 @@ TEST_CASE( "Execute Atom solver", "[atom-solver]")
     arrivalVelocity[ 2 ] = -4.17792707643158;
 
     // Set departure epoch.
-    DateTime departureEpoch( 63548650522376360 );
+    const DateTime departureEpoch( 63548650522376360 );
 
     // Time-of-flight [s].
     const Real timeOfFlight = 1000.0;
