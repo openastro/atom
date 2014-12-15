@@ -40,9 +40,9 @@ endif(NOT APPLE)
 
 # -------------------------------
 
-if(NOT FORCE_DEPENDENCIES_BUILD)
+if(NOT BUILD_DEPENDENCIES)
   find_package(Astro)
-endif(NOT FORCE_DEPENDENCIES_BUILD)
+endif(NOT BUILD_DEPENDENCIES)
 
 if(NOT ASTRO_FOUND)
   message(STATUS "Astro will be downloaded when ${CMAKE_PROJECT_NAME} is built")
@@ -76,9 +76,9 @@ endif(NOT APPLE)
 
 # -------------------------------
 
-if(NOT FORCE_DEPENDENCIES_BUILD)
+if(NOT BUILD_DEPENDENCIES)
   find_package(SGP4)
-endif(NOT FORCE_DEPENDENCIES_BUILD)
+endif(NOT BUILD_DEPENDENCIES)
 
 if(NOT SGP4_FOUND)
   message(STATUS "SGP4 will be downloaded when ${CMAKE_PROJECT_NAME} is built")
@@ -111,9 +111,9 @@ link_directories(${SGP4_LIBRARY_DIR})
 
 # -------------------------------
 
-if(NOT FORCE_DEPENDENCIES_BUILD)
+if(NOT BUILD_DEPENDENCIES)
   find_package(GSL)
-endif(NOT FORCE_DEPENDENCIES_BUILD)
+endif(NOT BUILD_DEPENDENCIES)
 
 if(NOT GSL_FOUND)
   message(STATUS "GSL will be downloaded when ${CMAKE_PROJECT_NAME} is built")

@@ -38,7 +38,7 @@ In addition, Atom depends on the following libraries:
   - [CATCH](https://www.github.com/philsquared/Catch) (unit testing library necessary for `BUILD_TESTS` option)
   - [Eigen](http://eigen.tuxfamily.org/) (linear algebra library necessary for `BUILD_TESTS_WITH_EIGEN` option)
 
-These dependencies will be downloaded and configured automagically if not already present locally (requires an internet connection).
+These dependencies will be downloaded and configured automagically if not already present locally (requires an internet connection). It takes a while to install [GSL](http://www.gnu.org/software/gsl) automagically, so it is recommended to pre-install it if possible using e.g., [Homebrew](http://brewformulas.org/Gsl) on Mac OS X, [apt-get](http://askubuntu.com/questions/490465/install-gnu-scientific-library-gsl-on-ubuntu-14-04-via-terminal) on Ubuntu, [Gsl for Windows](http://gnuwin32.sourceforge.net/packages/gsl.htm)).
 
 Installation
 ------
@@ -71,7 +71,7 @@ You can pass the following, general command-line options when running CMake:
 The following commands are conditional and can only be set if `BUILD_TESTS = ON`:
 
  - `-DBUILD_TESTS_WITH_EIGEN[=ON|OFF (default)]`: build tests using [Eigen](http://eigen.tuxfamily.org/) (execute tests from build-directory using `ctest -V`)
- - `-DBUILD_COVERAGE[=ON|OFF (default)]`: build code coverage using [Gcov](https://gcc.gnu.org/onlinedocs/gcc/Gcov.html) and [LCOV](http://ltp.sourceforge.net/coverage/lcov.php) (both must be installed; requires [GCC](https://gcc.gnu.org/) compiler; execute coverage analysis from build-directory using `make coverage`)
+ - `-DBUILD_COVERAGE_ANALYSIS[=ON|OFF (default)]`: build code coverage using [Gcov](https://gcc.gnu.org/onlinedocs/gcc/Gcov.html) and [LCOV](http://ltp.sourceforge.net/coverage/lcov.php) (both must be installed; requires [GCC](https://gcc.gnu.org/) compiler; execute coverage analysis from build-directory using `make coverage`)
 
 Pass these options either directly to the `cmake ..` build command or run `ccmake ..` instead to bring up the interface that can be used to toggle options.
 
