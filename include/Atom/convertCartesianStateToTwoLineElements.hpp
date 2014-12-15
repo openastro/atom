@@ -1,4 +1,4 @@
-/*    
+/*
  * Copyright (c) 2014 K. Kumar (me@kartikkumar.com)
  * Distributed under the MIT License.
  * See accompanying file LICENSE.md or copy at http://opensource.org/licenses/MIT
@@ -22,7 +22,7 @@
 #include <libsgp4/SGP4.h>
 #include <libsgp4/Tle.h>
 
-#include <SAM/sam.hpp>
+#include <Astro/astro.hpp>
 #include <SML/sml.hpp>
 
 #include <Atom/printFunctions.hpp>
@@ -32,13 +32,13 @@ namespace atom
 
 //! Convert Cartesian state to TLE (Two Line Elements).
 /*!
- * Converts a given Cartesian state (position, velocity) to an equivalent TLE. 
+ * Converts a given Cartesian state (position, velocity) to an equivalent TLE.
  *
- * This function makes use of a root-finder to solve a non-linear system. Locating the root of the 
- * non-linear system corresponds finding the TLE that, when evaluated at its epoch using the 
+ * This function makes use of a root-finder to solve a non-linear system. Locating the root of the
+ * non-linear system corresponds finding the TLE that, when evaluated at its epoch using the
  * SGP4/SDP4 propagator (Vallado, 2012), yields the target Cartesian state (within tolerance).
  *
- * Details of the underlying non-linear system and algorithm are catalogued by 
+ * Details of the underlying non-linear system and algorithm are catalogued by
  * Kumar, et al. (2014).
  *
  * @sa     evaluateCartesianToTwoLineElementsSystem, DateTime
@@ -68,27 +68,27 @@ namespace atom
  *                                     propagated with SGP4 propagator to target epoch
  */
 template< typename Real, typename Vector6 >
-const Tle convertCartesianStateToTwoLineElements( 
+const Tle convertCartesianStateToTwoLineElements(
     const Vector6& cartesianState,
     const DateTime& epoch,
     std::string& solverStatusSummary,
     int& numberOfIterations,
     const Tle& referenceTle = Tle( ),
     const Real earthGravitationalParameter = kMU,
-    const Real earthMeanRadius = kXKMPER,    
+    const Real earthMeanRadius = kXKMPER,
     const Real absoluteTolerance = 1.0e-10,
     const Real relativeTolerance = 1.0e-5,
     const int maximumIterations = 100 );
 
 //! Convert Cartesian state to TLE (Two Line Elements).
 /*!
- * Converts a given Cartesian state (position, velocity) to an equivalent TLE. 
+ * Converts a given Cartesian state (position, velocity) to an equivalent TLE.
  *
- * This function makes use of a root-finder to solve a non-linear system. Locating the root of the 
- * non-linear system corresponds finding the TLE that, when evaluated at its epoch using the 
+ * This function makes use of a root-finder to solve a non-linear system. Locating the root of the
+ * non-linear system corresponds finding the TLE that, when evaluated at its epoch using the
  * SGP4/SDP4 propagator (Vallado, 2012), yields the target Cartesian state (within tolerance).
  *
- * Details of the underlying non-linear system and algorithm are catalogued by 
+ * Details of the underlying non-linear system and algorithm are catalogued by
  * Kumar, et al. (2014).
  *
  * This is a function overload to ensure that the user can opt to leave out solver summary status
@@ -106,26 +106,26 @@ const Tle convertCartesianStateToTwoLineElements(
  *                                     propagated with SGP4 propagator to target epoch
  */
 template< typename Real, typename Vector6 >
-const Tle convertCartesianStateToTwoLineElements(  const Vector6& cartesianState, 
+const Tle convertCartesianStateToTwoLineElements(  const Vector6& cartesianState,
                                                    const DateTime& epoch );
 
 //! Compute residuals for converting Cartesian state to TLE.
 /*!
- * Evaluates system of non-linear equations and computes residuals to find TLE corresponding with 
+ * Evaluates system of non-linear equations and computes residuals to find TLE corresponding with
  * target Cartesian state. The residual function, \f$\bar{R}\f$ is computed as follows:
- *  \f[ 
+ *  \f[
  *      \bar{R} = 0 = \begin{pmatrix}
  *                      \frac{\bar{r}_{new} - \bar{r}_{target}}{R_{Earth}}\\
  *                      \frac{\bar{v}_{new} - \bar{v}_{target}}{V_{c,Earth}}\\
  *                    \end{pmatrix}
  *  \f]
- * where \f$\bar{r}_{new}\f$ and \f$\bar{v}_{new}\f$ are the new Cartesian position and velocity 
- * vectors, computed by updating the TLE mean elements and propagating the TLE using the SGP4 
- * propagator, \f$\bar{r}_{target}\f$ anf \f$\bar{v}_{target}\f$ are the target Cartesian position 
- * and velocity vectors, \f$R_{Earth}\f$ is the mean radius of the Earth, and \f$V_{c,Earth}\f$ is 
+ * where \f$\bar{r}_{new}\f$ and \f$\bar{v}_{new}\f$ are the new Cartesian position and velocity
+ * vectors, computed by updating the TLE mean elements and propagating the TLE using the SGP4
+ * propagator, \f$\bar{r}_{target}\f$ anf \f$\bar{v}_{target}\f$ are the target Cartesian position
+ * and velocity vectors, \f$R_{Earth}\f$ is the mean radius of the Earth, and \f$V_{c,Earth}\f$ is
  * the circular velocity at \f$R_{Earth}\f$. Note that the residuals are non-dimensional. They are
  * used to drive a root-finding process that uses the GSL library.
- * 
+ *
  * @sa convertCartesianStateToTwoLineElements
  * @tparam Real                 Type for reals
  * @tparam Vector6              Type for 6-vector of reals
@@ -135,13 +135,13 @@ const Tle convertCartesianStateToTwoLineElements(  const Vector6& cartesianState
  * @return                      GSL flag indicating success or failure
  */
 template< typename Real, typename Vector6 >
-int computeCartesianToTwoLineElementResiduals( const gsl_vector* independentVariables, 
-                                               void* parameters, 
+int computeCartesianToTwoLineElementResiduals( const gsl_vector* independentVariables,
+                                               void* parameters,
                                                gsl_vector* residuals );
 
 //! Update TLE mean elements.
 /*!
- * Updates mean elements stored in TLE based on current osculating elements. This function 
+ * Updates mean elements stored in TLE based on current osculating elements. This function
  * uses the osculating elements to replace mean elements (converts units and computes mean anomaly
  * and mean motion).
  *
@@ -152,7 +152,7 @@ int computeCartesianToTwoLineElementResiduals( const gsl_vector* independentVari
  * @return                             New TLE with mean elements updated.
  */
 template< typename Real >
-const Tle updateTleMeanElements( const gsl_vector* newKeplerianElements, 
+const Tle updateTleMeanElements( const gsl_vector* newKeplerianElements,
                                  const Tle oldTle,
                                  const Real earthGravitationalParameter );
 
@@ -169,41 +169,41 @@ struct CartesianToTwoLineElementsParameters;
 
 //! Convert Cartesian state to TLE (Two Line Elements).
 template< typename Real, typename Vector6 >
-const Tle convertCartesianStateToTwoLineElements( 
+const Tle convertCartesianStateToTwoLineElements(
     const Vector6& cartesianState,
     const DateTime& epoch,
     std::string& solverStatusSummary,
     int& numberOfIterations,
     const Tle& referenceTle,
     const Real earthGravitationalParameter,
-    const Real earthMeanRadius,    
+    const Real earthMeanRadius,
     const Real absoluteTolerance,
     const Real relativeTolerance,
     const int maximumIterations )
 {
     // Store reference TLE as new TLE and update epoch.
     Tle newTle = referenceTle;
-    newTle.updateEpoch( epoch );  
+    newTle.updateEpoch( epoch );
 
     // Set up parameters for residual function.
-    CartesianToTwoLineElementsParameters< Real, Vector6 > parameters( 
-        cartesianState, earthGravitationalParameter, earthMeanRadius, newTle ); 
+    CartesianToTwoLineElementsParameters< Real, Vector6 > parameters(
+        cartesianState, earthGravitationalParameter, earthMeanRadius, newTle );
 
     // Set up residual function.
     gsl_multiroot_function cartesianToTwoLineElementsFunction
         = { &computeCartesianToTwoLineElementResiduals< Real, Vector6 >,
-            6, 
+            6,
             &parameters };
 
     // Compute current state in Keplerian elements.
-    const Vector6 keplerianElements = sam::convertCartesianToKeplerianElements(
+    const Vector6 keplerianElements = astro::convertCartesianToKeplerianElements(
         cartesianState, earthGravitationalParameter );
 
     // Set initial guess.
     gsl_vector* initialGuess = gsl_vector_alloc( 6 );
     for ( int i = 0; i < 6; i++ )
     {
-        gsl_vector_set( initialGuess, i, keplerianElements[ i ] );      
+        gsl_vector_set( initialGuess, i, keplerianElements[ i ] );
     }
 
     // Set up solver type (derivative free).
@@ -237,7 +237,7 @@ const Tle convertCartesianStateToTwoLineElements(
         solverStatus = gsl_multiroot_fsolver_iterate( solver );
 
         // Check if solver is stuck; if it is stuck, break from loop.
-        if ( solverStatus )   
+        if ( solverStatus )
         {
             std::cerr << "GSL solver status: " << solverStatus << std::endl;
             std::cerr << summary.str( ) << std::endl;
@@ -246,7 +246,7 @@ const Tle convertCartesianStateToTwoLineElements(
         }
 
         // Check if root has been found (within tolerance).
-        solverStatus = gsl_multiroot_test_delta( 
+        solverStatus = gsl_multiroot_test_delta(
           solver->dx, solver->x, absoluteTolerance, relativeTolerance );
     } while ( solverStatus == GSL_CONTINUE && counter < maximumIterations );
 
@@ -273,7 +273,7 @@ const Tle convertCartesianStateToTwoLineElements(
 
 //! Convert Cartesian state to TLE (Two Line Elements).
 template< typename Real, typename Vector6 >
-const Tle convertCartesianStateToTwoLineElements( const Vector6& cartesianState, 
+const Tle convertCartesianStateToTwoLineElements( const Vector6& cartesianState,
                                     const DateTime& epoch )
 {
     std::string dummyString = "";
@@ -284,8 +284,8 @@ const Tle convertCartesianStateToTwoLineElements( const Vector6& cartesianState,
 
 //! Compute residuals for converting Cartesian state to TLE.
 template< typename Real, typename Vector6 >
-int computeCartesianToTwoLineElementResiduals( const gsl_vector* independentVariables, 
-                                               void* parameters, 
+int computeCartesianToTwoLineElementResiduals( const gsl_vector* independentVariables,
+                                               void* parameters,
                                                gsl_vector* residuals )
 {
     // Store parameters locally.
@@ -293,116 +293,116 @@ int computeCartesianToTwoLineElementResiduals( const gsl_vector* independentVari
         = static_cast< CartesianToTwoLineElementsParameters< Real, Vector6 >* >(
             parameters )->targetState;
 
-    const Real earthGravitationalParameter 
+    const Real earthGravitationalParameter
         = static_cast< CartesianToTwoLineElementsParameters< Real, Vector6 >* >(
             parameters )->earthGravitationalParameter;
 
-    const Real earthMeanRadius 
+    const Real earthMeanRadius
         = static_cast< CartesianToTwoLineElementsParameters< Real, Vector6 >* >(
             parameters )->earthMeanRadius;
 
-    const Tle referenceTle 
+    const Tle referenceTle
         = static_cast< CartesianToTwoLineElementsParameters< Real, Vector6 >* >(
             parameters )->referenceTle;
 
     // Update TLE mean elements and store as new TLE.
-    Tle newTle = updateTleMeanElements( 
+    Tle newTle = updateTleMeanElements(
         independentVariables, referenceTle, earthGravitationalParameter );
 
     // Propagate new TLE to epoch of TLE.
     SGP4 sgp4( newTle );
-    Eci propagatedState = sgp4.FindPosition( 0.0 ); 
+    Eci propagatedState = sgp4.FindPosition( 0.0 );
 
-    // Compute circular velocity at Earth radius (scaling fact used to non-dimensionalize 
+    // Compute circular velocity at Earth radius (scaling fact used to non-dimensionalize
     // velocities) [km/s].
-    const Real circularVelocityEarthRadius = sam::computeCircularVelocity( 
+    const Real circularVelocityEarthRadius = astro::computeCircularVelocity(
         kXKMPER, earthGravitationalParameter );
 
-    // Evaluate system of non-linear equations and store residuals.    
-    gsl_vector_set( residuals, 0, 
+    // Evaluate system of non-linear equations and store residuals.
+    gsl_vector_set( residuals, 0,
                     ( propagatedState.Position( ).x - targetState[ 0 ] ) / earthMeanRadius );
-    gsl_vector_set( residuals, 1, 
+    gsl_vector_set( residuals, 1,
                     ( propagatedState.Position( ).y - targetState[ 1 ] ) / earthMeanRadius );
-    gsl_vector_set( residuals, 2, 
+    gsl_vector_set( residuals, 2,
                     ( propagatedState.Position( ).z - targetState[ 2 ] ) / earthMeanRadius );
-    gsl_vector_set( residuals, 3, 
-                    ( propagatedState.Velocity( ).x - targetState[ 3 ] ) 
+    gsl_vector_set( residuals, 3,
+                    ( propagatedState.Velocity( ).x - targetState[ 3 ] )
                     / circularVelocityEarthRadius );
-    gsl_vector_set( residuals, 4, 
-                    ( propagatedState.Velocity( ).y - targetState[ 4 ] ) 
+    gsl_vector_set( residuals, 4,
+                    ( propagatedState.Velocity( ).y - targetState[ 4 ] )
                     / circularVelocityEarthRadius );
-    gsl_vector_set( residuals, 5, 
-                    ( propagatedState.Velocity( ).z - targetState[ 5 ] ) 
+    gsl_vector_set( residuals, 5,
+                    ( propagatedState.Velocity( ).z - targetState[ 5 ] )
                     / circularVelocityEarthRadius );
 
-    return GSL_SUCCESS;        
+    return GSL_SUCCESS;
 }
 
 //! Update TLE mean elements.
 template< typename Real >
-const Tle updateTleMeanElements( const gsl_vector* newKeplerianElements, 
+const Tle updateTleMeanElements( const gsl_vector* newKeplerianElements,
                                  const Tle oldTle,
                                  const Real earthGravitationalParameter )
 {
     // Copy old TLE to new object.
     Tle newTle( oldTle );
-    
+
     // Compute new mean inclination [deg].
     const Real newInclination
-        = sml::computeModulo( 
-            sml::convertRadiansToDegrees( 
-                gsl_vector_get( newKeplerianElements, sam::inclinationIndex ) ), 360.0 );
+        = sml::computeModulo(
+            sml::convertRadiansToDegrees(
+                gsl_vector_get( newKeplerianElements, astro::inclinationIndex ) ), 360.0 );
 
     // Compute new mean right ascending node [deg].
-    const Real newRightAscendingNode 
-        = sml::computeModulo( 
-            sml::convertRadiansToDegrees( 
-              gsl_vector_get( newKeplerianElements, 
-                              sam::longitudeOfAscendingNodeIndex ) ), 360.0 );   
+    const Real newRightAscendingNode
+        = sml::computeModulo(
+            sml::convertRadiansToDegrees(
+              gsl_vector_get( newKeplerianElements,
+                              astro::longitudeOfAscendingNodeIndex ) ), 360.0 );
 
     // Compute new mean eccentricity [-].
-    const Real newEccentricity 
-        = gsl_vector_get( newKeplerianElements, sam::eccentricityIndex );
+    const Real newEccentricity
+        = gsl_vector_get( newKeplerianElements, astro::eccentricityIndex );
 
     // Compute new mean argument of perigee [deg].
-    const Real newArgumentPerigee 
-        = sml::computeModulo( 
-            sml::convertRadiansToDegrees( 
-                gsl_vector_get( newKeplerianElements, sam::argumentOfPeriapsisIndex ) ), 360.0 ); 
+    const Real newArgumentPerigee
+        = sml::computeModulo(
+            sml::convertRadiansToDegrees(
+                gsl_vector_get( newKeplerianElements, astro::argumentOfPeriapsisIndex ) ), 360.0 );
 
     // Compute new eccentric anomaly [rad].
     const Real eccentricAnomaly
-        = sam::convertTrueAnomalyToEccentricAnomaly( 
-            gsl_vector_get( newKeplerianElements, sam::trueAnomalyIndex ), newEccentricity );     
+        = astro::convertTrueAnomalyToEccentricAnomaly(
+            gsl_vector_get( newKeplerianElements, astro::trueAnomalyIndex ), newEccentricity );
 
     // Compute new mean mean anomaly [deg].
     const Real newMeanAnomaly
-        = sml::computeModulo( 
-            sml::convertRadiansToDegrees( 
-                sam::convertEccentricAnomalyToMeanAnomaly( 
+        = sml::computeModulo(
+            sml::convertRadiansToDegrees(
+                astro::convertEccentricAnomalyToMeanAnomaly(
                     eccentricAnomaly, newEccentricity ) ), 360.0 );
 
     // Compute new mean motion [rev/day].
     const Real newMeanMotion
-        = sam::computeKeplerMeanMotion( 
-            gsl_vector_get( newKeplerianElements, sam::semiMajorAxisIndex ),
-            earthGravitationalParameter ) / ( 2.0 * sml::SML_PI ) * sam::SAM_JULIAN_DAY_IN_SECONDS;
+        = astro::computeKeplerMeanMotion(
+            gsl_vector_get( newKeplerianElements, astro::semiMajorAxisIndex ),
+            earthGravitationalParameter ) / ( 2.0 * sml::SML_PI ) * astro::ASTRO_JULIAN_DAY_IN_SECONDS;
 
     // Update mean elements in TLE with osculating elements.
-    newTle.updateMeanElements( newInclination, 
+    newTle.updateMeanElements( newInclination,
                                newRightAscendingNode,
                                newEccentricity,
                                newArgumentPerigee,
-                               newMeanAnomaly, 
-                               newMeanMotion ); 
+                               newMeanAnomaly,
+                               newMeanMotion );
 
-    return newTle;  
+    return newTle;
 }
 
 //! Parameter struct used by Cartesian-to-TLE residual function.
 template< typename Real, typename Vector6 >
 struct CartesianToTwoLineElementsParameters
-{ 
+{
 public:
 
     //! Constructor taking parameter values.
@@ -414,7 +414,7 @@ public:
      * @param anEarthMeanRadius             Earth mean radius [km]
      * @param aReferenceTle                 Reference Two-Line-Elements
      */
-    CartesianToTwoLineElementsParameters( 
+    CartesianToTwoLineElementsParameters(
         const Vector6& aTargetState,
         const Real anEarthGravitationalParameter,
         const Real anEarthMeanRadius,
