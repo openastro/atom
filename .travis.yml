@@ -28,7 +28,8 @@ addons:
     branch_pattern: coverity_scan
 
 install:
-  - sudo apt-get install libgsl0ldbl
+  - sudo apt-get update
+  - sudo apt-get install gsl-bin libgsl0ldbl
   - if [ "$COVERITY_SCAN_BRANCH_PATTERN" != "coverity_scan" ] && [ "$CXX" == "g++" ] && [ "$BUILD_TYPE" == "Debug" ]; then
       sudo pip install cpp-coveralls;
     fi

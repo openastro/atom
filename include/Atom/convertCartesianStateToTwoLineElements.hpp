@@ -153,7 +153,7 @@ int computeCartesianToTwoLineElementResiduals( const gsl_vector* independentVari
  */
 template< typename Real >
 const Tle updateTleMeanElements( const gsl_vector* newKeplerianElements,
-                                 const Tle oldTle,
+                                 const Tle& oldTle,
                                  const Real earthGravitationalParameter );
 
 //! Parameter struct used by Cartesian-to-TLE residual function.
@@ -274,7 +274,7 @@ const Tle convertCartesianStateToTwoLineElements(
 //! Convert Cartesian state to TLE (Two Line Elements).
 template< typename Real, typename Vector6 >
 const Tle convertCartesianStateToTwoLineElements( const Vector6& cartesianState,
-                                    const DateTime& epoch )
+                                                  const DateTime& epoch )
 {
     std::string dummyString = "";
     int dummyint = 0;
@@ -341,7 +341,7 @@ int computeCartesianToTwoLineElementResiduals( const gsl_vector* independentVari
 //! Update TLE mean elements.
 template< typename Real >
 const Tle updateTleMeanElements( const gsl_vector* newKeplerianElements,
-                                 const Tle oldTle,
+                                 const Tle& oldTle,
                                  const Real earthGravitationalParameter )
 {
     // Copy old TLE to new object.
