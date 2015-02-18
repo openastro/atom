@@ -31,7 +31,7 @@
 build
 bin
 lib
-docs
+doxgeyn-docs
 temp
 debug
 external
