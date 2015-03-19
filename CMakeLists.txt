@@ -1,4 +1,4 @@
-# Copyright (c) 2014 Kartik Kumar (me@kartikkumar.com)
+# Copyright (c) 2014-2015 Kartik Kumar (me@kartikkumar.com)
 # Distributed under the MIT License.
 # See accompanying file LICENSE.md or copy at http://opensource.org/licenses/MIT
 
@@ -25,6 +25,9 @@ endif(NOT EXTERNAL_PATH)
 if(NOT DOXYGEN_PATH)
   set(DOXYGEN_PATH                             "${PROJECT_PATH}/doxygen-docs")
 endif(NOT DOXYGEN_PATH)
+if(NOT DOCS_PATH)
+  set(DOCS_PATH                                "${PROJECT_PATH}/docs")
+endif(NOT DOCS_PATH)
 set(TEST_PATH                                  "${PROJECT_BINARY_DIR}/test")
 set(TEST_NAME                                  "test_atom")
 

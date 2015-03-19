@@ -1,5 +1,5 @@
-/*    
- * Copyright (c) 2014 K. Kumar (me@kartikkumar.com)
+/*
+ * Copyright (c) 2014-2015 Kartik Kumar (me@kartikkumar.com)
  * Distributed under the MIT License.
  * See accompanying file LICENSE.md or copy at http://opensource.org/licenses/MIT
  */
@@ -13,7 +13,7 @@
 #include <libsgp4/Eci.h>
 #include <libsgp4/SGP4.h>
 #include <libsgp4/Tle.h>
- 
+
 #include "Atom/convertCartesianStateToTwoLineElements.hpp"
 
 namespace atom
@@ -36,7 +36,7 @@ TEST_CASE( "Convert Cartesian state to Two-Line-Elements", "[cartesian-to-TLE]")
     cartesianState[ 5 ] = 5.5;
 
     // Convert Cartesian state to TLE. Note that the epoch is arbitrary.
-    Tle convertedTle = convertCartesianStateToTwoLineElements< Real, Vector6 >( 
+    Tle convertedTle = convertCartesianStateToTwoLineElements< Real, Vector6 >(
         cartesianState, DateTime( ) );
 
     // Propagate the converted TLE to the epoch of the TLE. This generates a Cartesian state.
@@ -44,17 +44,17 @@ TEST_CASE( "Convert Cartesian state to Two-Line-Elements", "[cartesian-to-TLE]")
     Eci recomputedCartesianState = sgp4.FindPosition( 0.0 );
 
     // Check if recomputed Cartesian state matches the target state.
-    REQUIRE( recomputedCartesianState.Position( ).x 
+    REQUIRE( recomputedCartesianState.Position( ).x
              == Approx( cartesianState[ 0 ] ).epsilon( 1.0e-8 ) );
-    REQUIRE( recomputedCartesianState.Position( ).y 
+    REQUIRE( recomputedCartesianState.Position( ).y
              == Approx( cartesianState[ 1 ] ).epsilon( 1.0e-8 ) );
-    REQUIRE( recomputedCartesianState.Position( ).z 
+    REQUIRE( recomputedCartesianState.Position( ).z
              == Approx( cartesianState[ 2 ] ).epsilon( 1.0e-8 ) );
-    REQUIRE( recomputedCartesianState.Velocity( ).x 
+    REQUIRE( recomputedCartesianState.Velocity( ).x
              == Approx( cartesianState[ 3 ] ).epsilon( 1.0e-8 ) );
-    REQUIRE( recomputedCartesianState.Velocity( ).y 
+    REQUIRE( recomputedCartesianState.Velocity( ).y
              == Approx( cartesianState[ 4 ] ).epsilon( 1.0e-8 ) );
-    REQUIRE( recomputedCartesianState.Velocity( ).z 
+    REQUIRE( recomputedCartesianState.Velocity( ).z
              == Approx( cartesianState[ 5 ] ).epsilon( 1.0e-8 ) );
 }
 

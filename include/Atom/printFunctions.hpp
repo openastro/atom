@@ -1,5 +1,5 @@
-/*    
- * Copyright (c) 2014 K. Kumar (me@kartikkumar.com)
+/*
+ * Copyright (c) 2014-2015 Kartik Kumar (me@kartikkumar.com)
  * Distributed under the MIT License.
  * See accompanying file LICENSE.md or copy at http://opensource.org/licenses/MIT
  */
@@ -19,17 +19,17 @@ namespace atom
 
 //! Print Cartesian-state-to-TLE converter solver summary table header.
 /*!
- * Prints header to string for table containing summary of status of non-linear solver used to 
+ * Prints header to string for table containing summary of status of non-linear solver used to
  * convert a Cartesian state to a TLE.
  *
- * @sa convertCartesianStateToTwoLineElements 
+ * @sa convertCartesianStateToTwoLineElements
  * @return String containing table header for non-linear solver status.
  */
 inline std::string printCartesianToTleSolverStateTableHeader( );
 
 //! Print summary of current state of non-linear solver for Cartesian-state-to-TLE converter.
 /*!
- * Prints current state of non-linear solver used to convert a Cartesian state to a TLE, as row 
+ * Prints current state of non-linear solver used to convert a Cartesian state to a TLE, as row
  * for a summary table.
  *
  * @sa convertCartesianStateToTwoLineElements
@@ -37,15 +37,15 @@ inline std::string printCartesianToTleSolverStateTableHeader( );
  * @param  solver    Pointer to GSL solver
  * @return           String containing row-data for non-linear solver status summary table
  */
-inline std::string printCartesianToTleSolverState( 
+inline std::string printCartesianToTleSolverState(
   const int iteration, gsl_multiroot_fsolver* solver );
 
 //! Print Atom solver summary table header.
 /*!
- * Prints header to string for table containing summary of status of non-linear solver used to 
+ * Prints header to string for table containing summary of status of non-linear solver used to
  * execute Atom solver.
  *
- * @sa executeAtomSolver 
+ * @sa executeAtomSolver
  * @return String containing table header for non-linear solver status.
  */
 inline std::string printAtomSolverStateTableHeader( );
@@ -60,7 +60,7 @@ inline std::string printAtomSolverStateTableHeader( );
  * @param  solver    Pointer to GSL solver
  * @return           String containing row-data for non-linear solver status summary table
  */
-inline std::string printAtomSolverState( 
+inline std::string printAtomSolverState(
   const int iteration, gsl_multiroot_fsolver* solver );
 
 //! Print data element to console.
@@ -68,7 +68,7 @@ inline std::string printAtomSolverState(
  * Prints a specified data element to string, given a specified width and a filler character.
  * This function is auxilliary to the print-functions used to the print the state of the non-linear
  * solver.
- * 
+ *
  * @sa printSolverStateTableHeader, printSolverState
  * @tparam DataType  Type for specified data element
  * @param  datum     Specified data element to print
@@ -76,7 +76,7 @@ inline std::string printAtomSolverState(
  * @param  filler    Character used to fill fixed-width, [default: ' ']
  * @return           String containing printed data element
  */
-template< typename DataType > 
+template< typename DataType >
 inline std::string printElement( const DataType datum, const int width, const char filler = ' ' );
 
 //! Print Cartesian-state-to-TLE converter solver summary table header.
@@ -97,11 +97,11 @@ inline std::string printCartesianToTleSolverStateTableHeader( )
                  << printElement( "f5", 15, ' ' )
                  << printElement( "f6", 15, ' ' )
                  << std::endl;
-    return headerBuffer.str( );    
+    return headerBuffer.str( );
 }
 
 //! Print summary of current state of non-linear solver for Cartesian-state-to-TLE converter.
-inline std::string printCartesianToTleSolverState( 
+inline std::string printCartesianToTleSolverState(
   const int iteration, gsl_multiroot_fsolver* solver )
 {
     std::ostringstream buffer;
@@ -118,7 +118,7 @@ inline std::string printCartesianToTleSolverState(
            << printElement( gsl_vector_get( solver->f, 3 ), 15, ' ' )
            << printElement( gsl_vector_get( solver->f, 4 ), 15, ' ' )
            << printElement( gsl_vector_get( solver->f, 5 ), 15, ' ' )
-           << std::endl;    
+           << std::endl;
     return buffer.str( );
 }
 
@@ -134,11 +134,11 @@ inline std::string printAtomSolverStateTableHeader( )
                  << printElement( "f2", 15, ' ' )
                  << printElement( "f3", 15, ' ' )
                  << std::endl;
-    return headerBuffer.str( );   
+    return headerBuffer.str( );
 }
 
 //! Print summary of current state of non-linear solver for Atom solver.
-inline std::string printAtomSolverState( 
+inline std::string printAtomSolverState(
   const int iteration, gsl_multiroot_fsolver* solver )
 {
     std::ostringstream buffer;
@@ -149,12 +149,12 @@ inline std::string printAtomSolverState(
            << printElement( gsl_vector_get( solver->f, 0 ), 15, ' ' )
            << printElement( gsl_vector_get( solver->f, 1 ), 15, ' ' )
            << printElement( gsl_vector_get( solver->f, 2 ), 15, ' ' )
-           << std::endl;    
+           << std::endl;
     return buffer.str( );
 }
 
 //! Print data element to console.
-template< typename DataType > 
+template< typename DataType >
 inline std::string printElement( const DataType datum, const int width, const char filler )
 {
     std::ostringstream buffer;

@@ -90,12 +90,3 @@ Disclaimer
 ------
 
 The copyright holders are not liable for any damage(s) incurred due to improper use of Atom.
-
-TODO
-------
-
-  - Improve convergence radius of Atom solver (which includes figuring out the best scaling for the residual function)
-  - Extend test suite
-  - Figure out better way (avoiding code duplication) to build `STL`-based and `Eigen`-based tests in the same build tree
-  - Add version detection in `CMake` module so that find_package respects minimum version required.
-  - Find a way to provide an option to clean installation.

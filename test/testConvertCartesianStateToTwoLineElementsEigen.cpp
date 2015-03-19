@@ -1,5 +1,5 @@
-/*    
- * Copyright (c) 2014 K. Kumar (me@kartikkumar.com)
+/*
+ * Copyright (c) 2014-2015 Kartik Kumar (me@kartikkumar.com)
  * Distributed under the MIT License.
  * See accompanying file LICENSE.md or copy at http://opensource.org/licenses/MIT
  */
@@ -14,7 +14,7 @@
 #include <libsgp4/Eci.h>
 #include <libsgp4/SGP4.h>
 #include <libsgp4/Tle.h>
- 
+
 #include "Atom/convertCartesianStateToTwoLineElements.hpp"
 
 namespace atom
@@ -37,7 +37,7 @@ TEST_CASE( "Convert Cartesian state to Two-Line-Elements", "[cartesian-to-TLE]")
     cartesianElements[ 5 ] = 5.5;
 
     // Convert Cartesian state to TLE. Note that the epoch is arbitrary.
-    const Tle convertedTle = convertCartesianStateToTwoLineElements< Real, Vector >( 
+    const Tle convertedTle = convertCartesianStateToTwoLineElements< Real, Vector >(
         cartesianElements, DateTime( ) );
 
     // Propagate the converted TLE to the epoch of the TLE. This generates a Cartesian state.
@@ -45,17 +45,17 @@ TEST_CASE( "Convert Cartesian state to Two-Line-Elements", "[cartesian-to-TLE]")
     Eci recomputedcartesianElements = sgp4.FindPosition( 0.0 );
 
     // Check if recomputed Cartesian state matches the target state.
-    REQUIRE( recomputedcartesianElements.Position( ).x 
+    REQUIRE( recomputedcartesianElements.Position( ).x
              == Approx( cartesianElements[ 0 ] ).epsilon( 1.0e-8 ) );
-    REQUIRE( recomputedcartesianElements.Position( ).y 
+    REQUIRE( recomputedcartesianElements.Position( ).y
              == Approx( cartesianElements[ 1 ] ).epsilon( 1.0e-8 ) );
-    REQUIRE( recomputedcartesianElements.Position( ).z 
+    REQUIRE( recomputedcartesianElements.Position( ).z
              == Approx( cartesianElements[ 2 ] ).epsilon( 1.0e-8 ) );
-    REQUIRE( recomputedcartesianElements.Velocity( ).x 
+    REQUIRE( recomputedcartesianElements.Velocity( ).x
              == Approx( cartesianElements[ 3 ] ).epsilon( 1.0e-8 ) );
-    REQUIRE( recomputedcartesianElements.Velocity( ).y 
+    REQUIRE( recomputedcartesianElements.Velocity( ).y
              == Approx( cartesianElements[ 4 ] ).epsilon( 1.0e-8 ) );
-    REQUIRE( recomputedcartesianElements.Velocity( ).z 
+    REQUIRE( recomputedcartesianElements.Velocity( ).z
              == Approx( cartesianElements[ 5 ] ).epsilon( 1.0e-8 ) );
 }
 

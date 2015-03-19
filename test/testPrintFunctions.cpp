@@ -1,5 +1,5 @@
-/*    
- * Copyright (c) 2014 K. Kumar (me@kartikkumar.com)
+/*
+ * Copyright (c) 2014-2015 Kartik Kumar (me@kartikkumar.com)
  * Distributed under the MIT License.
  * See accompanying file LICENSE.md or copy at http://opensource.org/licenses/MIT
  */
@@ -18,7 +18,7 @@ namespace atom
 namespace tests
 {
 
-int computeCartesianToTwoLineElementsTestFunction( 
+int computeCartesianToTwoLineElementsTestFunction(
     const gsl_vector* independentVariables, void* parameters, gsl_vector* residuals )
 {
     gsl_vector_set( residuals, 0, 1.2 );
@@ -30,7 +30,7 @@ int computeCartesianToTwoLineElementsTestFunction(
     return GSL_SUCCESS;
 }
 
-int computeAtomTestFunction( 
+int computeAtomTestFunction(
     const gsl_vector* independentVariables, void* parameters, gsl_vector* residuals )
 {
     gsl_vector_set( residuals, 0, 1.2 );
@@ -43,7 +43,7 @@ struct Parameters{ };
 
 TEST_CASE( "Print Cartesian state to Two-Line-Elements table header", "[print]" )
 {
-    // Set expected output string.    
+    // Set expected output string.
     std::ostringstream tableHeader;
     tableHeader
         << "#  a              e              i              AoP            RAAN           "
@@ -59,18 +59,18 @@ TEST_CASE( "Print Cartesian state to Two-Line-Elements solver state", "[print]" 
     // Set initial guess for GSL solver.
     gsl_vector* initialGuess = gsl_vector_alloc( 6 );
     gsl_vector_set( initialGuess, 0, 0.1 );
-    gsl_vector_set( initialGuess, 1, 0.2 );      
-    gsl_vector_set( initialGuess, 2, 0.3 );      
-    gsl_vector_set( initialGuess, 3, 0.4 );      
-    gsl_vector_set( initialGuess, 4, 0.5 );      
-    gsl_vector_set( initialGuess, 5, 0.6 );      
+    gsl_vector_set( initialGuess, 1, 0.2 );
+    gsl_vector_set( initialGuess, 2, 0.3 );
+    gsl_vector_set( initialGuess, 3, 0.4 );
+    gsl_vector_set( initialGuess, 4, 0.5 );
+    gsl_vector_set( initialGuess, 5, 0.6 );
 
     // Set up dummy GSL solver.
     Parameters parameters;
 
-    gsl_multiroot_function testFunction 
-        = { &computeCartesianToTwoLineElementsTestFunction, 
-            6, 
+    gsl_multiroot_function testFunction
+        = { &computeCartesianToTwoLineElementsTestFunction,
+            6,
             &parameters };
 
     const gsl_multiroot_fsolver_type* solverType = gsl_multiroot_fsolver_hybrids;
@@ -89,7 +89,7 @@ TEST_CASE( "Print Cartesian state to Two-Line-Elements solver state", "[print]" 
 
 TEST_CASE( "Print Atom solver table header", "[print-atom-solver]")
 {
-    // Set expected output string.    
+    // Set expected output string.
     std::ostringstream tableHeader;
     tableHeader
         << "#  v1_x           v1_y           v1_z           "
@@ -104,8 +104,8 @@ TEST_CASE( "Print Atom solver state", "[print]" )
     // Set initial guess for GSL solver.
     gsl_vector* initialGuess = gsl_vector_alloc( 3 );
     gsl_vector_set( initialGuess, 0, 0.1 );
-    gsl_vector_set( initialGuess, 1, 0.2 );      
-    gsl_vector_set( initialGuess, 2, 0.3 );     
+    gsl_vector_set( initialGuess, 1, 0.2 );
+    gsl_vector_set( initialGuess, 2, 0.3 );
 
     // Set up dummy GSL solver.
     Parameters parameters;
@@ -127,7 +127,7 @@ TEST_CASE( "Print Atom solver state", "[print]" )
 
 TEST_CASE( "Print element", "[print]" )
 {
-    REQUIRE( printElement( "test", 10 ) == "test      " );    
+    REQUIRE( printElement( "test", 10 ) == "test      " );
     REQUIRE( printElement( 1.2345, 10, '.' ) == "1.2345...." );
 }
 

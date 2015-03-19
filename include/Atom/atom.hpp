@@ -1,5 +1,5 @@
-/*    
- * Copyright (c) 2014 K. Kumar (me@kartikkumar.com)
+/*
+ * Copyright (c) 2014-2015 Kartik Kumar (me@kartikkumar.com)
  * Distributed under the MIT License.
  * See accompanying file LICENSE.md or copy at http://opensource.org/licenses/MIT
  */
@@ -17,7 +17,7 @@
 
 #include <libsgp4/DateTime.h>
 #include <libsgp4/Eci.h>
-#include <libsgp4/SGP4.h> 
+#include <libsgp4/SGP4.h>
 #include <libsgp4/Tle.h>
 
 #include "Atom/convertCartesianStateToTwoLineElements.hpp"
@@ -27,20 +27,20 @@ namespace atom
 
 //! Execute Atom solver.
 /*!
- * Executes Atom solver to find the transfer orbit connecting two positions. The epoch of the 
+ * Executes Atom solver to find the transfer orbit connecting two positions. The epoch of the
  * departure position and the Time-of-flight need to be specified.
  *
  * The Atom solver is an analog of the Lambert solver (Lancaster and Blanchard, 1969;
  * Gooding, 1990; Izzo, 2014), that aims to find the conic section that bridges two positions, at
  * given epochs, by using impulsive manveuvers (Delta-V maneuvers) at departure and arrival. The
- * Atom solver aims to solver a similar orbital transfer, subject to perturbations. The 
+ * Atom solver aims to solver a similar orbital transfer, subject to perturbations. The
  * perturbations taken into account are those encoded in the SGP4/SDP4 propagators (Vallado, 2006).
  *
  * Since the Atom solver makes use fo the SGP4/SDP4 propagators, it can currently only solve for
  * perturbed transfers around the Earth. As a result, the Earth's gravitational parameter is fixed,
  * as specified by the SGP4/SDP4 propagators (Vallado, 2006).
- * 
- * Details of the underlying non-linear system and algorithm are catalogued by 
+ *
+ * Details of the underlying non-linear system and algorithm are catalogued by
  * Kumar, et al. (2014).
  *
  * @sa     convertCartesianStateToTwoLineElements
@@ -52,55 +52,55 @@ namespace atom
  * @param  timeOfFlight                Time-of-Flight for orbital transfer [s]
  * @param  departureVelocityGuess      Initial guess for the departure velocity (serves as initial
  *                                     guess for the internal root-finding procedure) [km/s]
- * @param  solverStatusSummary         Status of non-linear solver printed as a table 
- * @param  numberOfIterations          Number of iterations completed by solver 
+ * @param  solverStatusSummary         Status of non-linear solver printed as a table
+ * @param  numberOfIterations          Number of iterations completed by solver
  * @param  referenceTle                Reference Two Line Elements [default: 0-TLE]
  * @param  earthGravitationalParameter Earth gravitational parameter [km^3 s^-2] [default: mu_SGP]
  * @param  earthMeanRadius             Earth mean radius [km] [default: R_SGP]
- * @param  absoluteTolerance           Absolute tolerance used to check if root-finder has 
+ * @param  absoluteTolerance           Absolute tolerance used to check if root-finder has
  *                                     converged [default: 1.0e-10] (see Kumar, et al. (2014) for
  *                                     details on how convergence is tested)
- * @param  relativeTolerance           Relative tolerance used to check if root-finder has 
- *                                     converged [default: 1.0e-5] (see Kumar, et al. (2014) for 
+ * @param  relativeTolerance           Relative tolerance used to check if root-finder has
+ *                                     converged [default: 1.0e-5] (see Kumar, et al. (2014) for
  *                                     details on how convergence is tested)
- * @param  maximumIterations           Maximum number of solver iterations permitted. Once the 
- *                                     solver reaches this limit, the loop will be broken and the 
- *                                     solver status will report that it has not converged 
+ * @param  maximumIterations           Maximum number of solver iterations permitted. Once the
+ *                                     solver reaches this limit, the loop will be broken and the
+ *                                     solver status will report that it has not converged
  *                                     [default: 100].
  * @return                             Departure and arrival velocities (stored in that order)
  */
 template< typename Real, typename Vector3 >
-const std::pair< Vector3, Vector3 > executeAtomSolver( 
-    const Vector3& departurePosition, 
+const std::pair< Vector3, Vector3 > executeAtomSolver(
+    const Vector3& departurePosition,
     const DateTime& departureEpoch,
-    const Vector3& arrivalPosition, 
-    const Real timeOfFlight, 
+    const Vector3& arrivalPosition,
+    const Real timeOfFlight,
     const Vector3& departureVelocityGuess,
     std::string& solverStatusSummary,
     int& numberOfIterations,
     const Tle& referenceTle = Tle( ),
     const Real earthGravitationalParameter = kMU,
-    const Real earthMeanRadius = kXKMPER,    
+    const Real earthMeanRadius = kXKMPER,
     const Real absoluteTolerance = 1.0e-10,
     const Real relativeTolerance = 1.0e-5,
     const int maximumIterations = 100 );
 
 //! Execute Atom solver.
 /*!
- * Executes Atom solver to find the transfer orbit connecting two positions. The epoch of the 
+ * Executes Atom solver to find the transfer orbit connecting two positions. The epoch of the
  * departure position and the Time-of-flight need to be specified.
  *
  * The Atom solver is an analog of the Lambert solver (Lancaster and Blanchard, 1969;
  * Gooding, 1990; Izzo, 2014), that aims to find the conic section that bridges two positions, at
  * given epochs, by using impulsive manveuvers (Delta-V maneuvers) at departure and arrival. The
- * Atom solver aims to solver a similar orbital transfer, subject to perturbations. The 
+ * Atom solver aims to solver a similar orbital transfer, subject to perturbations. The
  * perturbations taken into account are those encoded in the SGP4/SDP4 propagators (Vallado, 2006).
  *
  * Since the Atom solver makes use fo the SGP4/SDP4 propagators, it can currently only solve for
  * perturbed transfers around the Earth. As a result, the Earth's gravitational parameter is fixed,
  * as specified by the SGP4/SDP4 propagators (Vallado, 2006).
- * 
- * Details of the underlying non-linear system and algorithm are catalogued by 
+ *
+ * Details of the underlying non-linear system and algorithm are catalogued by
  * Kumar, et al. (2014).
  *
  * This is a function overload to ensure that the user can opt to leave out solver summary status
@@ -119,11 +119,11 @@ const std::pair< Vector3, Vector3 > executeAtomSolver(
  * @return                        Departure and arrival velocities (stored in that order)
  */
 template< typename Real, typename Vector3 >
-const std::pair< Vector3, Vector3 > executeAtomSolver( 
-    const Vector3& departurePosition, 
+const std::pair< Vector3, Vector3 > executeAtomSolver(
+    const Vector3& departurePosition,
     const DateTime& departureEpoch,
-    const Vector3& arrivalPosition, 
-    const Real timeOfFlight, 
+    const Vector3& arrivalPosition,
+    const Real timeOfFlight,
     const Vector3& departureVelocityGuess );
 
 //! Compute residuals to execute Atom solver.
@@ -131,12 +131,12 @@ const std::pair< Vector3, Vector3 > executeAtomSolver(
  * Evaluates system of non-linear equations and computes residuals to execute the Atom solver. The
  * residual function, \f$\bar{R}\f$ is computed as follows:
  * The system of non-linear equations used is:
- *  \f[ 
+ *  \f[
  *      \bar{R} = 0 = \frac{\bar{r}_{new} - \bar{r}_{target}}{R_{Earth}}
  *  \f]
- * where \f$\bar{r}_{new}\f$ is the Cartesian position computed by propagating the 
- * initial, prescribed state under the action of an initial impulsive Delta V, by a prescribed 
- * time-of-flight, \f$\bar{r}_{target}\f$ is the target Cartesian position and 
+ * where \f$\bar{r}_{new}\f$ is the Cartesian position computed by propagating the
+ * initial, prescribed state under the action of an initial impulsive Delta V, by a prescribed
+ * time-of-flight, \f$\bar{r}_{target}\f$ is the target Cartesian position and
  * \f$R_{Earth}\f$ is the mean radius of the Earth. Note that the residuals are non-dimensional.
  * They are used to drive a root-finding process that uses the GSL library.
  *
@@ -150,7 +150,7 @@ const std::pair< Vector3, Vector3 > executeAtomSolver(
  */
 template< typename Real, typename Vector3 >
 int computeAtomResiduals( const gsl_vector* independentVariables,
-                          void* parameters, 
+                          void* parameters,
                           gsl_vector* residuals );
 
 //! Parameter struct used by Atom residual function.
@@ -166,32 +166,32 @@ struct AtomParameters;
 
 //! Execute Atom solver.
 template< typename Real, typename Vector3 >
-const std::pair< Vector3, Vector3 > executeAtomSolver( 
-    const Vector3& departurePosition, 
+const std::pair< Vector3, Vector3 > executeAtomSolver(
+    const Vector3& departurePosition,
     const DateTime& departureEpoch,
-    const Vector3& arrivalPosition, 
-    const Real timeOfFlight, 
+    const Vector3& arrivalPosition,
+    const Real timeOfFlight,
     const Vector3& departureVelocityGuess,
     std::string& solverStatusSummary,
     int& numberOfIterations,
     const Tle& referenceTle,
     const Real earthGravitationalParameter,
-    const Real earthMeanRadius,    
+    const Real earthMeanRadius,
     const Real absoluteTolerance,
     const Real relativeTolerance,
     const int maximumIterations )
 {
     // Set up parameters for residual function.
-    AtomParameters< Real, Vector3 > parameters( departurePosition, 
-                                                departureEpoch, 
-                                                arrivalPosition, 
+    AtomParameters< Real, Vector3 > parameters( departurePosition,
+                                                departureEpoch,
+                                                arrivalPosition,
                                                 timeOfFlight,
-                                                earthGravitationalParameter, 
-                                                earthMeanRadius, 
-                                                referenceTle, 
-                                                absoluteTolerance, 
-                                                relativeTolerance, 
-                                                maximumIterations ); 
+                                                earthGravitationalParameter,
+                                                earthMeanRadius,
+                                                referenceTle,
+                                                absoluteTolerance,
+                                                relativeTolerance,
+                                                maximumIterations );
 
     // Set up residual function.
     gsl_multiroot_function atomFunction
@@ -203,7 +203,7 @@ const std::pair< Vector3, Vector3 > executeAtomSolver(
     gsl_vector* initialGuess = gsl_vector_alloc( 3 );
     for ( int i = 0; i < 3; i++ )
     {
-        gsl_vector_set( initialGuess, i, departureVelocityGuess[ i ] );      
+        gsl_vector_set( initialGuess, i, departureVelocityGuess[ i ] );
     }
 
     // Set up solver type (derivative free).
@@ -236,7 +236,7 @@ const std::pair< Vector3, Vector3 > executeAtomSolver(
         solverStatus = gsl_multiroot_fsolver_iterate( solver );
 
         // Check if solver is stuck; if it is stuck, break from loop.
-        if ( solverStatus )   
+        if ( solverStatus )
         {
             std::cerr << "GSL solver status: " << solverStatus << std::endl;
             std::cerr << summary.str( ) << std::endl;
@@ -245,7 +245,7 @@ const std::pair< Vector3, Vector3 > executeAtomSolver(
         }
 
         // Check if root has been found (within tolerance).
-        solverStatus = gsl_multiroot_test_delta( 
+        solverStatus = gsl_multiroot_test_delta(
           solver->dx, solver->x, absoluteTolerance, relativeTolerance );
     } while ( solverStatus == GSL_CONTINUE && counter < maximumIterations );
 
@@ -282,14 +282,14 @@ const std::pair< Vector3, Vector3 > executeAtomSolver(
     std::string dummyString = "";
     int dummyint = 0;
     const Tle departureTle = convertCartesianStateToTwoLineElements< Real >(
-        departureState, 
-        departureEpoch, 
-        dummyString, 
-        dummyint, 
-        referenceTle, 
-        earthGravitationalParameter, 
-        earthMeanRadius, 
-        absoluteTolerance, 
+        departureState,
+        departureEpoch,
+        dummyString,
+        dummyint,
+        referenceTle,
+        earthGravitationalParameter,
+        earthMeanRadius,
+        absoluteTolerance,
         relativeTolerance,
         maximumIterations );
 
@@ -312,46 +312,46 @@ const std::pair< Vector3, Vector3 > executeAtomSolver(
 
 //! Execute Atom solver.
 template< typename Real, typename Vector3 >
-const std::pair< Vector3, Vector3 > executeAtomSolver( 
-    const Vector3& departurePosition, 
+const std::pair< Vector3, Vector3 > executeAtomSolver(
+    const Vector3& departurePosition,
     const DateTime& departureEpoch,
-    const Vector3& arrivalPosition, 
-    const Real timeOfFlight, 
+    const Vector3& arrivalPosition,
+    const Real timeOfFlight,
     const Vector3& departureVelocityGuess )
 {
     std::string dummyString = "";
     int dummyint = 0;
-    return executeAtomSolver( departurePosition, 
-                              departureEpoch, 
-                              arrivalPosition, 
-                              timeOfFlight, 
+    return executeAtomSolver( departurePosition,
+                              departureEpoch,
+                              arrivalPosition,
+                              timeOfFlight,
                               departureVelocityGuess,
-                              dummyString, 
+                              dummyString,
                               dummyint );
 }
 
 //! Compute residuals to execute Atom solver.
 template< typename Real, typename Vector3 >
 int computeAtomResiduals( const gsl_vector* independentVariables,
-                          void* parameters, 
+                          void* parameters,
                           gsl_vector* residuals )
 {
     // Store parameters locally.
-    const Vector3 departurePosition = static_cast< AtomParameters< Real, Vector3 >* >( 
+    const Vector3 departurePosition = static_cast< AtomParameters< Real, Vector3 >* >(
         parameters )->departurePosition;
 
     const DateTime departureEpoch
         = static_cast< AtomParameters< Real, Vector3 >* >( parameters )->departureEpoch;
 
-    const Vector3 targetPosition = static_cast< AtomParameters< Real, Vector3 >* >( 
+    const Vector3 targetPosition = static_cast< AtomParameters< Real, Vector3 >* >(
         parameters )->targetPosition;
 
     const Real timeOfFlight
-        = static_cast< AtomParameters< Real, Vector3 >* >( 
+        = static_cast< AtomParameters< Real, Vector3 >* >(
             parameters )->timeOfFlight;
 
     const Real earthGravitationalParameter
-        = static_cast< AtomParameters< Real, Vector3 >* >( 
+        = static_cast< AtomParameters< Real, Vector3 >* >(
             parameters )->earthGravitationalParameter;
 
     const Real earthMeanRadius
@@ -390,14 +390,14 @@ int computeAtomResiduals( const gsl_vector* independentVariables,
     std::string dummyString = "";
     int dummyint = 0;
     const Tle departureTle = convertCartesianStateToTwoLineElements(
-        departureState, 
-        departureEpoch, 
-        dummyString, 
-        dummyint, 
-        referenceTle, 
-        earthGravitationalParameter, 
-        earthMeanRadius, 
-        absoluteTolerance, 
+        departureState,
+        departureEpoch,
+        dummyString,
+        dummyint,
+        referenceTle,
+        earthGravitationalParameter,
+        earthMeanRadius,
+        absoluteTolerance,
         relativeTolerance,
         maximumIterations );
 
@@ -405,21 +405,21 @@ int computeAtomResiduals( const gsl_vector* independentVariables,
     SGP4 sgp4( departureTle );
     Eci arrivalState = sgp4.FindPosition( timeOfFlight );
 
-    // Evaluate system of non-linear equations and store residuals.    
+    // Evaluate system of non-linear equations and store residuals.
     gsl_vector_set( residuals, 0,
                     ( arrivalState.Position( ).x - targetPosition[ 0 ] ) / earthMeanRadius );
-    gsl_vector_set( residuals, 1, 
+    gsl_vector_set( residuals, 1,
                     ( arrivalState.Position( ).y - targetPosition[ 1 ] ) / earthMeanRadius );
-    gsl_vector_set( residuals, 2, 
+    gsl_vector_set( residuals, 2,
                     ( arrivalState.Position( ).z - targetPosition[ 2 ] ) / earthMeanRadius );
 
-    return GSL_SUCCESS;        
+    return GSL_SUCCESS;
 }
 
 //! Parameter struct used by Atom residual function.
 template< typename Real, typename Vector3 >
 struct AtomParameters
-{ 
+{
 public:
 
     //! Constructor taking parameter values.
@@ -431,7 +431,7 @@ public:
      * @param aTargetPosition               Target Cartesian position [km]
      * @param aTimeOfFlight                 Time-of-Flight (TOF) [s]
      * @param anEarthGravitationalParameter Earth gravitational parameter [km^3 s^-2]
-     * @param anEarthMeanRadius             Earth mean radius [km]     
+     * @param anEarthMeanRadius             Earth mean radius [km]
      * @param aReferenceTle                 Reference Two-Line-Elements
      * @param anAbsoluteTolerance           Absolute tolerance used to check for convergence
      * @param aRelativeTolerance            Relative tolerance used to check for convergence
@@ -443,7 +443,7 @@ public:
         const Vector3& aTargetPosition,
         const Real aTimeOfFlight,
         const Real anEarthGravitationalParameter,
-        const Real anEarthMeanRadius,        
+        const Real anEarthMeanRadius,
         const Tle& aReferenceTle,
         const Real anAbsoluteTolerance,
         const Real aRelativeTolerance,
@@ -453,7 +453,7 @@ public:
           targetPosition( aTargetPosition ),
           timeOfFlight( aTimeOfFlight ),
           earthGravitationalParameter( anEarthGravitationalParameter ),
-          earthMeanRadius( anEarthMeanRadius ),          
+          earthMeanRadius( anEarthMeanRadius ),
           referenceTle( aReferenceTle ),
           absoluteTolerance( anAbsoluteTolerance ),
           relativeTolerance( aRelativeTolerance ),
@@ -476,7 +476,7 @@ public:
     const Real earthGravitationalParameter;
 
     //! Earth mean radius [km].
-    const Real earthMeanRadius;    
+    const Real earthMeanRadius;
 
     //! Reference TLE.
     const Tle referenceTle;

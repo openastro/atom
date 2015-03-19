@@ -1,5 +1,5 @@
-/*    
- * Copyright (c) 2014 K. Kumar (me@kartikkumar.com)
+/*
+ * Copyright (c) 2014-2015 Kartik Kumar (me@kartikkumar.com)
  * Distributed under the MIT License.
  * See accompanying file LICENSE.md or copy at http://opensource.org/licenses/MIT
  */
@@ -11,7 +11,7 @@
 #include <catch.hpp>
 
 #include <libsgp4/DateTime.h>
- 
+
 #include "Atom/atom.hpp"
 
 namespace atom
@@ -54,20 +54,20 @@ TEST_CASE( "Execute Atom solver", "[atom-solver]")
 
     // Time-of-flight [s].
     const Real timeOfFlight = 1000.0;
-            
+
     SECTION( "Test case with no iterations" )
     {
         // Execute Atom solver to compute departure and arrival velocities that bridge the given
         // positions.
         std::string dummyString = "";
         int numberOfIterations = 0;
-        const Velocities velocities = executeAtomSolver( departurePosition, 
-                                                         departureEpoch, 
-                                                         arrivalPosition, 
-                                                         timeOfFlight, 
+        const Velocities velocities = executeAtomSolver( departurePosition,
+                                                         departureEpoch,
+                                                         arrivalPosition,
+                                                         timeOfFlight,
                                                          departureVelocity,
                                                          dummyString,
-                                                         numberOfIterations ); 
+                                                         numberOfIterations );
 
         // Check that departure and arrival velocities match results.
         for ( int i = 0; i < 3; i++ )
@@ -82,7 +82,7 @@ TEST_CASE( "Execute Atom solver", "[atom-solver]")
 
     SECTION( "Test arbitrary case" )
     {
-        // Set initial guess for departure velocity [km/s]. Arbitrary values are added to the 
+        // Set initial guess for departure velocity [km/s]. Arbitrary values are added to the
         // expected departure velocity.
         Vector3 departureVelocityGuess( 3 );
         departureVelocityGuess[ 0 ] = departureVelocity[ 0 ] + 0.013;
@@ -93,10 +93,10 @@ TEST_CASE( "Execute Atom solver", "[atom-solver]")
         // positions.
         std::string dummyString = "";
         int numberOfIterations = 0;
-        const Velocities velocities = executeAtomSolver( departurePosition, 
-                                                         departureEpoch, 
-                                                         arrivalPosition, 
-                                                         timeOfFlight, 
+        const Velocities velocities = executeAtomSolver( departurePosition,
+                                                         departureEpoch,
+                                                         arrivalPosition,
+                                                         timeOfFlight,
                                                          departureVelocityGuess,
                                                          dummyString,
                                                          numberOfIterations );
@@ -110,7 +110,7 @@ TEST_CASE( "Execute Atom solver", "[atom-solver]")
 
         // Check that no iterations are required.
         REQUIRE( numberOfIterations == 57 );
-    }                                         
+    }
 }
 
 } // namespace tests
