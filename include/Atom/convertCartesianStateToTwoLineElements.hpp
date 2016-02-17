@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2014-2015 Kartik Kumar (me@kartikkumar.com)
+ * Copyright (c) 2014-2016 Kartik Kumar, Dinamica Srl (me@kartikkumar.com)
  * Distributed under the MIT License.
  * See accompanying file LICENSE.md or copy at http://opensource.org/licenses/MIT
  */
 
-#ifndef ATOM_CONVERT_CARTESIAN_STATE_TO_TWO_LINE_ELEMENTS_H
-#define ATOM_CONVERT_CARTESIAN_STATE_TO_TWO_LINE_ELEMENTS_H
+#ifndef ATOM_CONVERT_CARTESIAN_STATE_TO_TWO_LINE_ELEMENTS_HPP
+#define ATOM_CONVERT_CARTESIAN_STATE_TO_TWO_LINE_ELEMENTS_HPP
 
 #include <iostream>
 #include <sstream>
@@ -444,4 +444,4 @@ private:
 
 } // namespace atom
 
-#endif // ATOM_CONVERT_CARTESIAN_STATE_TO_TWO_LINE_ELEMENTS_H
+#endif // ATOM_CONVERT_CARTESIAN_STATE_TO_TWO_LINE_ELEMENTS_HPP

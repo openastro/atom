@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2015 Kartik Kumar (me@kartikkumar.com)
+ * Copyright (c) 2014-2016 Kartik Kumar, Dinamica Srl (me@kartikkumar.com)
  * Distributed under the MIT License.
  * See accompanying file LICENSE.md or copy at http://opensource.org/licenses/MIT
  */
@@ -11,8 +11,8 @@
 
 #include <gsl/gsl_multiroots.h>
 
-#ifndef ATOM_PRINT_FUNCTIONS_H
-#define ATOM_PRINT_FUNCTIONS_H
+#ifndef ATOM_PRINT_FUNCTIONS_HPP
+#define ATOM_PRINT_FUNCTIONS_HPP
 
 namespace atom
 {
@@ -164,4 +164,4 @@ inline std::string printElement( const DataType datum, const int width, const ch
 
 } // namespace atom
 
-#endif // ATOM_PRINT_FUNCTIONS_H
+#endif // ATOM_PRINT_FUNCTIONS_HPP
