@@ -30,7 +30,6 @@ addons:
       - texlive
       - libboost-all-dev
       - libgsl0ldbl
-      - gsl-bin
   coverity_scan:
     project:
       name: "kartikkumar/atom"
