@@ -29,7 +29,7 @@ addons:
     packages:
       - texlive
       - libboost-all-dev
-      - libgsl0ldbl
+      - libgsl0-dev
   coverity_scan:
     project:
       name: "kartikkumar/atom"
