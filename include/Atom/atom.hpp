@@ -295,7 +295,8 @@ const std::pair< Vector3, Vector3 > executeAtomSolver(
 
     // Propagate departure TLE by time-of-flight using SGP4 propagator.
     SGP4 sgp4( departureTle );
-    Eci arrivalState = sgp4.FindPosition( timeOfFlight );
+    DateTime arrivalEpoch = departureEpoch.AddSeconds( timeOfFlight );
+    Eci arrivalState = sgp4.FindPosition( arrivalEpoch );
 
     Vector3 arrivalVelocity( 3 );
     arrivalVelocity[ 0 ] = arrivalState.Velocity( ).x;
@@ -403,7 +404,8 @@ int computeAtomResiduals( const gsl_vector* independentVariables,
 
     // Propagate departure TLE by time-of-flight using SGP4 propagator.
     SGP4 sgp4( departureTle );
-    Eci arrivalState = sgp4.FindPosition( timeOfFlight );
+    DateTime arrivalEpoch = departureEpoch.AddSeconds( timeOfFlight );
+    Eci arrivalState = sgp4.FindPosition( arrivalEpoch );
 
     // Evaluate system of non-linear equations and store residuals.
     gsl_vector_set( residuals, 0,
