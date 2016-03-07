@@ -14,7 +14,7 @@ if(NOT SML_FOUND)
   ExternalProject_Add(sml-lib
     PREFIX ${EXTERNAL_PATH}/SML
     #--Download step--------------
-    URL https://github.com/kartikkumar/sml/archive/master.zip
+    URL https://github.com/astropnp/sml/archive/master.zip
     TIMEOUT 30
     #--Update/Patch step----------
     UPDATE_COMMAND ""
@@ -50,7 +50,7 @@ if(NOT ASTRO_FOUND)
     DEPENDS sml-lib
     PREFIX ${EXTERNAL_PATH}/Astro
     #--Download step--------------
-    URL https://github.com/kartikkumar/astro/archive/master.zip
+    URL https://github.com/astropnp/astro/archive/master.zip
     TIMEOUT 30
     #--Update/Patch step----------
     UPDATE_COMMAND ""
@@ -85,7 +85,7 @@ if(NOT SGP4_FOUND)
   ExternalProject_Add(sgp4-deorbit
     PREFIX ${EXTERNAL_PATH}/SGP4
     #--Download step--------------
-    URL https://github.com/kartikkumar/sgp4deorbit/archive/master.zip
+    URL https://github.com/astropnp/sgp4deorbit/archive/master.zip
     TIMEOUT 30
     #--Update/Patch step----------
     #--Configure step-------------
@@ -156,7 +156,7 @@ if(BUILD_TESTS)
     ExternalProject_Add(catch
       PREFIX ${EXTERNAL_PATH}/Catch
       #--Download step--------------
-      URL https://github.com/kartikkumar/Catch/archive/master.zip
+      URL https://github.com/philsquared/Catch/archive/master.zip
       TIMEOUT 30
       #--Update/Patch step----------
       UPDATE_COMMAND ""
