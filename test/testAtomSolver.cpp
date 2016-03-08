@@ -111,7 +111,7 @@ TEST_CASE( "Execute Atom Solver", "[atom-solver]" )
         }
 
         // Check that no iterations are required.
-        REQUIRE( numberOfIterations == 2 );
+        REQUIRE_FALSE( numberOfIterations == 0 );
     }
 }
 
