@@ -84,12 +84,11 @@ TEST_CASE( "Execute Atom Solver", "[atom-solver]" )
 
     SECTION( "Test arbitrary case" )
     {
-        // Set initial guess for departure velocity [km/s]. Arbitrary values are added to the
-        // expected departure velocity.
-        Vector3 departureVelocityGuess;
-        departureVelocityGuess[ 0 ] = departureVelocity[ 0 ] + 0.013;
-        departureVelocityGuess[ 1 ] = departureVelocity[ 1 ] - 0.074;
-        departureVelocityGuess[ 2 ] = departureVelocity[ 2 ] + 0.026;
+        // Set initial guess for departure velocity [km/s]. 
+        Vector3 departureVelocityGuess( 3 );
+        departureVelocityGuess[ 0 ] = 2.39618773382003;
+        departureVelocityGuess[ 1 ] = -6.83412563589514;
+        departureVelocityGuess[ 2 ] = 2.03013574194101;
 
         // Execute Atom solver to compute departure and arrival velocities that bridge the given
         // positions.
@@ -111,7 +110,7 @@ TEST_CASE( "Execute Atom Solver", "[atom-solver]" )
         }
 
         // Check that no iterations are required.
-        REQUIRE_FALSE( numberOfIterations == 0 );
+        REQUIRE( numberOfIterations == 2 );
     }
 }
 
