@@ -26,7 +26,7 @@ typedef std::vector< Real > Vector3;
 typedef std::pair< Vector3, Vector3 > Velocities;
 
 // This is a legacy test which should result in an exception being thrown since the tsince bug was fixed
-TEST_CASE( "Execute Atom solver", "[atom-solver]")
+TEST_CASE( "Execute Legacy Atom solver Test", "[atom-solver]")
 {
     // Set departure position [km].
     Vector3 departurePosition( 3 );
