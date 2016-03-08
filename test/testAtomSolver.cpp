@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2014-2016 Kartik Kumar, Dinamica Srl (me@kartikkumar.com)
+ * Copyright (c) 2014-2016 Abhishek Agrawal, Delft University of Technology (abhishek.agrawal@protonmail.com)
  * Distributed under the MIT License.
  * See accompanying file LICENSE.md or copy at http://opensource.org/licenses/MIT
  */
@@ -7,6 +8,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <stdexcept>
 
 #include <catch.hpp>
 
@@ -23,6 +25,7 @@ typedef double Real;
 typedef std::vector< Real > Vector3;
 typedef std::pair< Vector3, Vector3 > Velocities;
 
+// This is a legacy test which should result in an exception being thrown since the tsince bug was fixed
 TEST_CASE( "Execute Atom solver", "[atom-solver]")
 {
     // Set departure position [km].
@@ -61,23 +64,15 @@ TEST_CASE( "Execute Atom solver", "[atom-solver]")
         // positions.
         std::string dummyString = "";
         int numberOfIterations = 0;
-        const Velocities velocities = executeAtomSolver( departurePosition,
-                                                         departureEpoch,
-                                                         arrivalPosition,
-                                                         timeOfFlight,
-                                                         departureVelocity,
-                                                         dummyString,
-                                                         numberOfIterations );
-
-        // Check that departure and arrival velocities match results.
-        for ( int i = 0; i < 3; i++ )
-        {
-            REQUIRE( departureVelocity[ i ] == Approx( velocities.first[ i ] ).epsilon( 1.0e-6 ) );
-            REQUIRE( arrivalVelocity[ i ] == Approx( velocities.second[ i ] ).epsilon( 1.0e-6 ) );
-        }
-
-        // Check that no iterations are required.
-        REQUIRE( numberOfIterations == 0 );
+        
+        // check that an exception is thrown
+        REQUIRE_THROWS( executeAtomSolver( departurePosition,
+                                           departureEpoch,
+                                           arrivalPosition,
+                                           timeOfFlight,
+                                           departureVelocity,
+                                           dummyString,
+                                           numberOfIterations ) );
     }
 
     SECTION( "Test arbitrary case" )
@@ -88,28 +83,20 @@ TEST_CASE( "Execute Atom solver", "[atom-solver]")
         departureVelocityGuess[ 0 ] = departureVelocity[ 0 ] + 0.013;
         departureVelocityGuess[ 1 ] = departureVelocity[ 1 ] - 0.074;
         departureVelocityGuess[ 2 ] = departureVelocity[ 2 ] + 0.026;
-
+        
         // Execute Atom solver to compute departure and arrival velocities that bridge the given
         // positions.
         std::string dummyString = "";
         int numberOfIterations = 0;
-        const Velocities velocities = executeAtomSolver( departurePosition,
-                                                         departureEpoch,
-                                                         arrivalPosition,
-                                                         timeOfFlight,
-                                                         departureVelocityGuess,
-                                                         dummyString,
-                                                         numberOfIterations );
 
-        // Check that departure and arrival velocities match results.
-        for ( int i = 0; i < 3; i++ )
-        {
-            REQUIRE( departureVelocity[ i ] == Approx( velocities.first[ i ] ).epsilon( 1.0e-6 ) );
-            REQUIRE( arrivalVelocity[ i ] == Approx( velocities.second[ i ] ).epsilon( 1.0e-6 ) );
-        }
-
-        // Check that no iterations are required.
-        REQUIRE( numberOfIterations == 57 );
+        // check that an exception is thrown
+        REQUIRE_THROWS( executeAtomSolver( departurePosition,
+                                           departureEpoch,
+                                           arrivalPosition,
+                                           timeOfFlight,
+                                           departureVelocity,
+                                           dummyString,
+                                           numberOfIterations ) );
     }
 }
 
