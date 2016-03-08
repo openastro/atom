@@ -1,13 +1,13 @@
 Atom
 ===
 
-\cond [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT) [![Build Status](https://travis-ci.org/astropnp/atom.svg?branch=master)](https://travis-ci.org/astropnp/atom)[![Coverity Scan Build Status](https://scan.coverity.com/projects/3698/badge.svg)](https://scan.coverity.com/projects/3698) [![Coverage Status](https://coveralls.io/repos/astropnp/atom/badge.png)](https://coveralls.io/r/astropnp/atom) \endcond
+\cond [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT) [![Build Status](https://travis-ci.org/openastro/atom.svg?branch=master)](https://travis-ci.org/openastro/atom)[![Coverity Scan Build Status](https://scan.coverity.com/projects/3698/badge.svg)](https://scan.coverity.com/projects/3698) [![Coverage Status](https://coveralls.io/repos/openastro/atom/badge.png)](https://coveralls.io/r/openastro/atom) \endcond
 
-`Accurate Transfer Orbit Model (Atom)` is a C++ template library containing the Atom solver. The Atom solver is an analog of the Lambert solver using the SGP4/SDP4 propagation models.
+Accurate Transfer Orbit Model (Atom) is a C++ template library containing the Atom solver. The Atom solver is an analog of the Lambert solver using the SGP4/SDP4 propagation models.
 
-Details of the solver can be found in [Kumar, et al. (2015)](#temp)
+Details of the solver can be found in [Kumar, et al. (2016)](#temp)
 
-A CMake module is available to make it easy to include Atom in other CMake-based projects: [FindAtom.cmake](https://github.com/astropnp/cmake-modules/Modules/FindAtom.cmake).
+A CMake module is available to make it easy to include Atom in other CMake-based projects: [FindAtom.cmake](https://github.com/openastro/cmake-modules/Modules/FindAtom.cmake).
 
 Features
 ------
@@ -31,9 +31,9 @@ To install this project, please ensure that you have installed the following (in
 
 In addition, Atom depends on the following libraries:
 
-  - [SML](https://www.github.com/astropnp/sml) (math library)
-  - [Astro](https://www.github.com/astropnp/astro) (astrodynamics library)
-  - [SGP4](https://www.github.com/astropnp/sgp4deorbit) (SGP4/SDP4 library)
+  - [SML](https://www.github.com/openastro/sml) (math library)
+  - [Astro](https://www.github.com/openastro/astro) (astrodynamics library)
+  - [SGP4](https://www.github.com/openastro/sgp4) (SGP4/SDP4 library)
   - [GSL](http://www.gnu.org/software/gsl) (GNU scientific library that includes non-linear root-finders used)
   - [CATCH](https://www.github.com/philsquared/Catch) (unit testing library necessary for `BUILD_TESTS` option)
   - [Eigen](http://eigen.tuxfamily.org/) (linear algebra library necessary for `BUILD_TESTS_WITH_EIGEN` option)
@@ -45,7 +45,7 @@ Installation
 
 Run the following commands to download, build, and install this project.
 
-    git clone https://www.github.com/astropnp/atom
+    git clone https://www.github.com/openastro/atom
     cd atom
     git submodule init && git submodule update
     mkdir build && cd build
@@ -98,7 +98,7 @@ Contributing
 
 Once you've made your great commits:
 
-1. [Fork](https://github.com/astropnp/atom/fork) atom
+1. [Fork](https://github.com/openastro/atom/fork) Atom
 2. Create a topic branch - `git checkout -b my_branch`
 3. Push to your branch - `git push origin my_branch`
 4. Create a [Pull Request](http://help.github.com/pull-requests/) from your branch
@@ -107,4 +107,4 @@ Once you've made your great commits:
 Disclaimer
 ------
 
-The copyright holders are not liable for any damage(s) incurred due to improper use of `Atom`.
+The copyright holders are not liable for any damage(s) incurred due to improper use of Atom.
