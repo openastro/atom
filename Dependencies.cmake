@@ -14,7 +14,7 @@ if(NOT SML_FOUND)
   ExternalProject_Add(sml-lib
     PREFIX ${EXTERNAL_PATH}/SML
     #--Download step--------------
-    URL https://github.com/astropnp/sml/archive/master.zip
+    URL https://github.com/openastro/sml/archive/master.zip
     TIMEOUT 30
     #--Update/Patch step----------
     UPDATE_COMMAND ""
@@ -50,7 +50,7 @@ if(NOT ASTRO_FOUND)
     DEPENDS sml-lib
     PREFIX ${EXTERNAL_PATH}/Astro
     #--Download step--------------
-    URL https://github.com/astropnp/astro/archive/master.zip
+    URL https://github.com/openastro/astro/archive/master.zip
     TIMEOUT 30
     #--Update/Patch step----------
     UPDATE_COMMAND ""
@@ -82,10 +82,10 @@ endif(NOT BUILD_DEPENDENCIES)
 
 if(NOT SGP4_FOUND)
   message(STATUS "SGP4 will be downloaded when ${CMAKE_PROJECT_NAME} is built")
-  ExternalProject_Add(sgp4-deorbit
+  ExternalProject_Add(sgp4-lib
     PREFIX ${EXTERNAL_PATH}/SGP4
     #--Download step--------------
-    URL https://github.com/astropnp/sgp4deorbit/archive/master.zip
+    URL https://github.com/openastro/sgp4/archive/master.zip
     TIMEOUT 30
     #--Update/Patch step----------
     #--Configure step-------------
@@ -96,7 +96,7 @@ if(NOT SGP4_FOUND)
     #--Output logging-------------
     LOG_DOWNLOAD ON
   )
-  ExternalProject_Get_Property(sgp4-deorbit source_dir)
+  ExternalProject_Get_Property(sgp4-lib source_dir)
   set(SGP4_INCLUDE_DIRS ${source_dir} CACHE INTERNAL "Path to include folder for SGP4")
   set(SGP4_LIBRARY_DIR ${source_dir}/libsgp4 CACHE INTERNAL "Path to library folder for SGP4")
   set(SGP4_LIBRARY "sgp4")
