@@ -41,9 +41,9 @@ TEST_CASE( "Execute Atom Solver", "[atom-solver]" )
 
     // Set arrival position [km].
     Vector3 arrivalPosition( 3 );
-    arrivalPosition[ 0 ] = 385.246482619633;
-    arrivalPosition[ 1 ] = 2243.00298468343;
-    arrivalPosition[ 2 ] = 6723.68851012157;
+    arrivalPosition[ 0 ] = -92.709182054428;
+    arrivalPosition[ 1 ] = -3085.26470463394;
+    arrivalPosition[ 2 ] = -6491.00430424393;
 
     // Set arrival velocity [km/s].
     Vector3 arrivalVelocity( 3 );
