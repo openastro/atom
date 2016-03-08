@@ -4,15 +4,15 @@
  * See accompanying file LICENSE.md or copy at http://opensource.org/licenses/MIT
  */
 
+#ifndef ATOM_PRINT_FUNCTIONS_HPP
+#define ATOM_PRINT_FUNCTIONS_HPP
+
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
 
 #include <gsl/gsl_multiroots.h>
-
-#ifndef ATOM_PRINT_FUNCTIONS_HPP
-#define ATOM_PRINT_FUNCTIONS_HPP
 
 namespace atom
 {
