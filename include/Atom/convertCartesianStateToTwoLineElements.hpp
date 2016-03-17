@@ -30,6 +30,9 @@
 namespace atom
 {
 
+const static int meanMotionIndex  = astro::semiMajorAxisIndex;
+const static int meanAnomalyIndex = astro::trueAnomalyIndex;
+
 //! Convert Cartesian state to TLE (Two Line Elements).
 /*!
  * Converts a given Cartesian state (position, velocity) to an equivalent TLE.
@@ -139,22 +142,10 @@ int computeCartesianToTwoLineElementResiduals( const gsl_vector* independentVari
                                                void* parameters,
                                                gsl_vector* residuals );
 
-//! Update TLE mean elements.
-/*!
- * Updates mean elements stored in TLE based on current osculating elements. This function
- * uses the osculating elements to replace mean elements (converts units and computes mean anomaly
- * and mean motion).
- *
- * @tparam Real                        Real type
- * @param  newKeplerianElements        New Keplerian elements
- * @param  oldTle                      TLE in which the mean elements are to be replaced
- * @param  earthGravitationalParameter Earth gravitational parameter [km^3 s^-2]
- * @return                             New TLE with mean elements updated.
- */
-template< typename Real >
-const Tle updateTleMeanElements( const gsl_vector* newKeplerianElements,
-                                 const Tle& oldTle,
-                                 const Real earthGravitationalParameter );
+//! Compute TLE mean elements.
+template< typename Real, typename Vector6 >
+const Vector6 computeTleMeanElements( const Vector6& keplerianElements,
+                                      const Real earthGravitationalParameter );
 
 //! Parameter struct used by Cartesian-to-TLE residual function.
 /*!
@@ -199,74 +190,84 @@ const Tle convertCartesianStateToTwoLineElements(
     const Vector6 keplerianElements = astro::convertCartesianToKeplerianElements(
         cartesianState, earthGravitationalParameter );
 
+    // Compute current TLE mean elements.
+    const Vector6 tleMeanElements
+        = computeTleMeanElements( keplerianElements, earthGravitationalParameter );
+
     // Set initial guess.
     gsl_vector* initialGuess = gsl_vector_alloc( 6 );
     for ( int i = 0; i < 6; i++ )
     {
-        gsl_vector_set( initialGuess, i, keplerianElements[ i ] );
+        gsl_vector_set( initialGuess, i, tleMeanElements[ i ] );
     }
 
-    // Set up solver type (derivative free).
-    const gsl_multiroot_fsolver_type* solverType = gsl_multiroot_fsolver_hybrids;
-
-    // Allocate memory for solver.
-    gsl_multiroot_fsolver* solver = gsl_multiroot_fsolver_alloc( solverType, 6 );
-
-    // Set solver to use residual function with initial guess.
-    gsl_multiroot_fsolver_set( solver, &cartesianToTwoLineElementsFunction, initialGuess );
-
-     // Declare current solver status and iteration counter.
-    int solverStatus = false;
-    int counter = 0;
-
-    // Set up buffer to store solver status summary table.
-    std::ostringstream summary;
-
-    // Print header for summary table to buffer.
-    summary << printCartesianToTleSolverStateTableHeader( );
-
-    do
+    for ( unsigned int i = 0; i < 6; i++ )
     {
-        // Print current state of solver for summary table.
-        summary << printCartesianToTleSolverState( counter, solver );
+        std::cout << keplerianElements[ i ] << std::endl;
+        // std::cout << gsl_vector_get( initialGuess, i ) << std::endl;
+    }
 
-        // Increment iteration counter.
-        ++counter;
+    // // Set up solver type (derivative free).
+    // const gsl_multiroot_fsolver_type* solverType = gsl_multiroot_fsolver_hybrids;
 
-        // Execute solver iteration.
-        solverStatus = gsl_multiroot_fsolver_iterate( solver );
+    // // Allocate memory for solver.
+    // gsl_multiroot_fsolver* solver = gsl_multiroot_fsolver_alloc( solverType, 6 );
 
-        // Check if solver is stuck; if it is stuck, break from loop.
-        if ( solverStatus )
-        {
-            std::cerr << "GSL solver status: " << solverStatus << std::endl;
-            std::cerr << summary.str( ) << std::endl;
-            std::cerr << std::endl;
-            throw std::runtime_error( "ERROR: Non-linear solver is stuck!" );
-        }
+    // // Set solver to use residual function with initial guess.
+    // gsl_multiroot_fsolver_set( solver, &cartesianToTwoLineElementsFunction, initialGuess );
 
-        // Check if root has been found (within tolerance).
-        solverStatus = gsl_multiroot_test_delta(
-          solver->dx, solver->x, absoluteTolerance, relativeTolerance );
-    } while ( solverStatus == GSL_CONTINUE && counter < maximumIterations );
+    //  // Declare current solver status and iteration counter.
+    // int solverStatus = false;
+    // int counter = 0;
 
-    // Save number of iterations.
-    numberOfIterations = counter - 1;
+    // // Set up buffer to store solver status summary table.
+    // std::ostringstream summary;
 
-    // Print final status of solver to buffer.
-    summary << std::endl;
-    summary << "Status of non-linear solver: " << gsl_strerror( solverStatus ) << std::endl;
-    summary << std::endl;
+    // // Print header for summary table to buffer.
+    // summary << printCartesianToTleSolverStateTableHeader( );
 
-    // Write buffer contents to solver status summary string.
-    solverStatusSummary = summary.str( );
+    // do
+    // {
+    //     // Print current state of solver for summary table.
+    //     summary << printCartesianToTleSolverState( counter, solver );
 
-    // Update TLE with converged mean elements.
-    newTle = updateTleMeanElements( solver->x, newTle, earthGravitationalParameter );
+    //     // Increment iteration counter.
+    //     ++counter;
 
-    // Free up memory.
-    gsl_multiroot_fsolver_free( solver );
-    gsl_vector_free( initialGuess );
+    //     // Execute solver iteration.
+    //     solverStatus = gsl_multiroot_fsolver_iterate( solver );
+
+    //     // Check if solver is stuck; if it is stuck, break from loop.
+    //     if ( solverStatus )
+    //     {
+    //         std::cerr << "GSL solver status: " << solverStatus << std::endl;
+    //         std::cerr << summary.str( ) << std::endl;
+    //         std::cerr << std::endl;
+    //         throw std::runtime_error( "ERROR: Non-linear solver is stuck!" );
+    //     }
+
+    //     // Check if root has been found (within tolerance).
+    //     solverStatus = gsl_multiroot_test_delta(
+    //       solver->dx, solver->x, absoluteTolerance, relativeTolerance );
+    // } while ( solverStatus == GSL_CONTINUE && counter < maximumIterations );
+
+    // // Save number of iterations.
+    // numberOfIterations = counter - 1;
+
+    // // Print final status of solver to buffer.
+    // summary << std::endl;
+    // summary << "Status of non-linear solver: " << gsl_strerror( solverStatus ) << std::endl;
+    // summary << std::endl;
+
+    // // Write buffer contents to solver status summary string.
+    // solverStatusSummary = summary.str( );
+
+    // // Update TLE with converged mean elements.
+    // newTle = updateTleMeanElements( solver->x, newTle, earthGravitationalParameter );
+
+    // // Free up memory.
+    // gsl_multiroot_fsolver_free( solver );
+    // gsl_vector_free( initialGuess );
 
     return newTle;
 }
@@ -306,8 +307,13 @@ int computeCartesianToTwoLineElementResiduals( const gsl_vector* independentVari
             parameters )->referenceTle;
 
     // Update TLE mean elements and store as new TLE.
-    Tle newTle = updateTleMeanElements(
-        independentVariables, referenceTle, earthGravitationalParameter );
+    Tle newTle = referenceTle;
+    newTle.updateMeanElements( gsl_vector_get( independentVariables, astro::inclinationIndex ),
+                               gsl_vector_get( independentVariables, astro::longitudeOfAscendingNodeIndex ),
+                               gsl_vector_get( independentVariables, astro::eccentricityIndex ),
+                               gsl_vector_get( independentVariables, astro::argumentOfPeriapsisIndex ),
+                               gsl_vector_get( independentVariables, meanAnomalyIndex ),
+                               gsl_vector_get( independentVariables, meanMotionIndex ) );
 
     // Propagate new TLE to epoch of TLE.
     SGP4 sgp4( newTle );
@@ -319,85 +325,81 @@ int computeCartesianToTwoLineElementResiduals( const gsl_vector* independentVari
         kXKMPER, earthGravitationalParameter );
 
     // Evaluate system of non-linear equations and store residuals.
-    gsl_vector_set( residuals, 0,
-                    ( propagatedState.Position( ).x - targetState[ 0 ] ) / earthMeanRadius );
-    gsl_vector_set( residuals, 1,
-                    ( propagatedState.Position( ).y - targetState[ 1 ] ) / earthMeanRadius );
-    gsl_vector_set( residuals, 2,
-                    ( propagatedState.Position( ).z - targetState[ 2 ] ) / earthMeanRadius );
-    gsl_vector_set( residuals, 3,
-                    ( propagatedState.Velocity( ).x - targetState[ 3 ] )
-                    / circularVelocityEarthRadius );
-    gsl_vector_set( residuals, 4,
-                    ( propagatedState.Velocity( ).y - targetState[ 4 ] )
-                    / circularVelocityEarthRadius );
-    gsl_vector_set( residuals, 5,
-                    ( propagatedState.Velocity( ).z - targetState[ 5 ] )
-                    / circularVelocityEarthRadius );
+    // gsl_vector_set( residuals, 0,
+    //                 ( propagatedState.Position( ).x - targetState[ 0 ] ) / earthMeanRadius );
+    // gsl_vector_set( residuals, 1,
+    //                 ( propagatedState.Position( ).y - targetState[ 1 ] ) / earthMeanRadius );
+    // gsl_vector_set( residuals, 2,
+    //                 ( propagatedState.Position( ).z - targetState[ 2 ] ) / earthMeanRadius );
+    // gsl_vector_set( residuals, 3,
+    //                 ( propagatedState.Velocity( ).x - targetState[ 3 ] )
+    //                 / circularVelocityEarthRadius );
+    // gsl_vector_set( residuals, 4,
+    //                 ( propagatedState.Velocity( ).y - targetState[ 4 ] )
+    //                 / circularVelocityEarthRadius );
+    // gsl_vector_set( residuals, 5,
+    //                 ( propagatedState.Velocity( ).z - targetState[ 5 ] )
+    //                 / circularVelocityEarthRadius );
+    gsl_vector_set( residuals, 0, ( propagatedState.Position( ).x - targetState[ 0 ] ) );
+    gsl_vector_set( residuals, 1, ( propagatedState.Position( ).y - targetState[ 1 ] ) );
+    gsl_vector_set( residuals, 2, ( propagatedState.Position( ).z - targetState[ 2 ] ) );
+    gsl_vector_set( residuals, 3, ( propagatedState.Velocity( ).x - targetState[ 3 ] ) * 1000.0 );
+    gsl_vector_set( residuals, 4, ( propagatedState.Velocity( ).y - targetState[ 4 ] ) * 1000.0 );
+    gsl_vector_set( residuals, 5, ( propagatedState.Velocity( ).z - targetState[ 5 ] ) * 1000.0 );
 
     return GSL_SUCCESS;
 }
 
-//! Update TLE mean elements.
-template< typename Real >
-const Tle updateTleMeanElements( const gsl_vector* newKeplerianElements,
-                                 const Tle& oldTle,
-                                 const Real earthGravitationalParameter )
+//! Compute TLE mean elements.
+template< typename Real, typename Vector6 >
+const Vector6 computeTleMeanElements( const Vector6& keplerianElements,
+                                      const Real earthGravitationalParameter )
 {
-    // Copy old TLE to new object.
-    Tle newTle( oldTle );
+    Vector6 tleMeanElements = keplerianElements;
 
-    // Compute new mean inclination [deg].
-    const Real newInclination
+    // Compute mean inclination [deg].
+    tleMeanElements[ astro::inclinationIndex ]
+        = sml::computeModulo(
+            sml::convertRadiansToDegrees( keplerianElements[ astro::inclinationIndex ] ), 360.0 );
+
+    // Compute mean right ascending node [deg].
+    tleMeanElements[ astro::longitudeOfAscendingNodeIndex ]
         = sml::computeModulo(
             sml::convertRadiansToDegrees(
-                gsl_vector_get( newKeplerianElements, astro::inclinationIndex ) ), 360.0 );
+                keplerianElements[ astro::longitudeOfAscendingNodeIndex ] ), 360.0 );
 
-    // Compute new mean right ascending node [deg].
-    const Real newRightAscendingNode
+    // Compute mean eccentricity [-].
+    tleMeanElements[ astro::eccentricityIndex ] = keplerianElements[ astro::eccentricityIndex ];
+
+    // Compute mean argument of perigee [deg].
+    tleMeanElements[ astro::argumentOfPeriapsisIndex ]
         = sml::computeModulo(
             sml::convertRadiansToDegrees(
-              gsl_vector_get( newKeplerianElements,
-                              astro::longitudeOfAscendingNodeIndex ) ), 360.0 );
+                keplerianElements[ astro::argumentOfPeriapsisIndex ] ), 360.0 );
 
-    // Compute new mean eccentricity [-].
-    const Real newEccentricity
-        = gsl_vector_get( newKeplerianElements, astro::eccentricityIndex );
-
-    // Compute new mean argument of perigee [deg].
-    const Real newArgumentPerigee
-        = sml::computeModulo(
-            sml::convertRadiansToDegrees(
-                gsl_vector_get( newKeplerianElements, astro::argumentOfPeriapsisIndex ) ), 360.0 );
-
-    // Compute new eccentric anomaly [rad].
+    // Compute mean eccentric anomaly [rad].
     const Real eccentricAnomaly
         = astro::convertTrueAnomalyToEccentricAnomaly(
-            gsl_vector_get( newKeplerianElements, astro::trueAnomalyIndex ), newEccentricity );
+            keplerianElements[ astro::trueAnomalyIndex ],
+            tleMeanElements[ astro::eccentricityIndex ] );
 
-    // Compute new mean mean anomaly [deg].
-    const Real newMeanAnomaly
+    // Compute mean mean anomaly [deg].
+    const Real meanMeanAnomaly
         = sml::computeModulo(
             sml::convertRadiansToDegrees(
                 astro::convertEccentricAnomalyToMeanAnomaly(
-                    eccentricAnomaly, newEccentricity ) ), 360.0 );
+                    eccentricAnomaly, tleMeanElements[ astro::eccentricityIndex ] ) ), 360.0 );
 
     // Compute new mean motion [rev/day].
-    const Real newMeanMotion
+    tleMeanElements[ meanMotionIndex ]
         = astro::computeKeplerMeanMotion(
-            gsl_vector_get( newKeplerianElements, astro::semiMajorAxisIndex ),
+            keplerianElements[ astro::semiMajorAxisIndex ],
             earthGravitationalParameter ) / ( 2.0 * sml::SML_PI ) * astro::ASTRO_JULIAN_DAY_IN_SECONDS;
 
-    // Update mean elements in TLE with osculating elements.
-    newTle.updateMeanElements( newInclination,
-                               newRightAscendingNode,
-                               newEccentricity,
-                               newArgumentPerigee,
-                               newMeanAnomaly,
-                               newMeanMotion );
-
-    return newTle;
+    return tleMeanElements;
 }
+
+
 
 //! Parameter struct used by Cartesian-to-TLE residual function.
 template< typename Real, typename Vector6 >
