@@ -217,7 +217,8 @@ const Tle convertCartesianStateToTwoLineElements(
 
     // Compute initial guess for TLE mean elements.
     const Vector6 initialTleMeanElements
-        = computeTleMeanElements( initialKeplerianElements, earthGravitationalParameter );
+        = computeInitialGuessTleMeanElements( initialKeplerianElements,
+                                              earthGravitationalParameter );
 
     // Set initial guess.
     gsl_vector* initialGuessTleMeanElements = gsl_vector_alloc( 6 );
@@ -233,7 +234,9 @@ const Tle convertCartesianStateToTwoLineElements(
     gsl_multiroot_fsolver* solver = gsl_multiroot_fsolver_alloc( solverType, 6 );
 
     // Set solver to use residual function with initial guess for TLE mean elements.
-    gsl_multiroot_fsolver_set( solver, &cartesianToTwoLineElementsFunction, initialGuessTleMeanElements );
+    gsl_multiroot_fsolver_set( solver,
+                               &cartesianToTwoLineElementsFunction,
+                               initialGuessTleMeanElements );
 
      // Declare current solver status and iteration counter.
     int solverStatus = false;
