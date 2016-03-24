@@ -45,8 +45,8 @@ TEST_CASE( "Print Cartesian state to Two-Line-Elements table header", "[print]" 
     // Set expected output string.
     std::ostringstream tableHeader;
     tableHeader
-        << "#  a              e              i              AoP            RAAN           "
-        << "TA             f1             f2             f3             f4             "
+        << "#  i              RAAN           e              AoP            M              "
+        << "n              f1             f2             f3             f4             "
         << "f5             f6             "
         << std::endl;
 

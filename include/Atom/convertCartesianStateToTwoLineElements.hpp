@@ -7,6 +7,7 @@
 #ifndef ATOM_CONVERT_CARTESIAN_STATE_TO_TWO_LINE_ELEMENTS_HPP
 #define ATOM_CONVERT_CARTESIAN_STATE_TO_TWO_LINE_ELEMENTS_HPP
 
+#include <cmath>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -79,7 +80,7 @@ const Tle convertCartesianStateToTwoLineElements(
     const Real earthGravitationalParameter = kMU,
     const Real earthMeanRadius = kXKMPER,
     const Real absoluteTolerance = 1.0e-10,
-    const Real relativeTolerance = 1.0e-5,
+    const Real relativeTolerance = 1.0e-8,
     const int maximumIterations = 100 );
 
 //! Convert Cartesian state to TLE (Two Line Elements).
@@ -262,9 +263,6 @@ const Tle convertCartesianStateToTwoLineElements(
         // Check if solver is stuck; if it is stuck, break from loop.
         if ( solverStatus )
         {
-            std::cerr << "GSL solver status: " << solverStatus << std::endl;
-            std::cerr << summary.str( ) << std::endl;
-            std::cerr << std::endl;
             throw std::runtime_error( "ERROR: Non-linear solver is stuck!" );
         }
 
@@ -286,9 +284,21 @@ const Tle convertCartesianStateToTwoLineElements(
 
     // Generate TLE with converged mean elements.
     Tle virtualTle = templateTle;
+
+    Real convergedMeanEccentricity = gsl_vector_get( solver->x, 2 );
+    if ( convergedMeanEccentricity < 0.0 )
+    {
+        convergedMeanEccentricity = std::fabs( gsl_vector_get( solver->x, 2 ) );
+    }
+
+    if ( convergedMeanEccentricity > 0.999 )
+    {
+        convergedMeanEccentricity = 0.99;
+    }
+
     virtualTle.updateMeanElements( sml::computeModulo( std::fabs( gsl_vector_get( solver->x, 0 ) ), 180.0 ),
                                    sml::computeModulo( gsl_vector_get( solver->x, 1 ), 360.0 ),
-                                   sml::computeModulo( std::fabs( gsl_vector_get( solver->x, 2 ) ), 0.999 ),
+                                   convergedMeanEccentricity,
                                    sml::computeModulo( gsl_vector_get( solver->x, 3 ), 360.0 ),
                                    sml::computeModulo( gsl_vector_get( solver->x, 4 ), 360.0 ),
                                    std::fabs( gsl_vector_get( solver->x, 5 ) ) );
@@ -326,10 +336,21 @@ int computeCartesianToTwoLineElementResiduals( const gsl_vector* independentVari
     Tle tle = templateTle;
 
     Real meanInclination = sml::computeModulo( std::fabs( gsl_vector_get( independentVariables, 0 ) ), 180.0 );
-    Real meanRightAscendingNode = gsl_vector_get( independentVariables, 1 );
-    Real meanEccentricity = sml::computeModulo( std::fabs( gsl_vector_get( independentVariables, 2 ) ), 0.999 );
-    Real meanArgumentPerigee = gsl_vector_get( independentVariables, 3 );
-    Real meanMeanAnomaly = gsl_vector_get( independentVariables, 4 );
+    Real meanRightAscendingNode = sml::computeModulo( gsl_vector_get( independentVariables, 1 ), 360.0 );
+
+    Real meanEccentricity = gsl_vector_get( independentVariables, 2 );
+    if ( meanEccentricity < 0.0 )
+    {
+        meanEccentricity = std::fabs( gsl_vector_get( independentVariables, 2 ) );
+    }
+
+    if ( meanEccentricity > 0.999 )
+    {
+        meanEccentricity = 0.99;
+    }
+
+    Real meanArgumentPerigee =  sml::computeModulo( gsl_vector_get( independentVariables, 3 ), 360.0 );
+    Real meanMeanAnomaly =  sml::computeModulo( gsl_vector_get( independentVariables, 4 ), 360.0 );
     Real meanMeanMotion = std::fabs( gsl_vector_get( independentVariables, 5 ) );
 
     tle.updateMeanElements( meanInclination,
@@ -358,7 +379,7 @@ int computeCartesianToTwoLineElementResiduals( const gsl_vector* independentVari
 //! Compute initial guess for TLE mean elements.
 template< typename Real, typename Vector6 >
 const Vector6 computeInitialGuessTleMeanElements( const Vector6& keplerianElements,
-                                                  const Real earthGravitationalParameter );
+                                                  const Real earthGravitationalParameter )
 
 {
     Vector6 tleMeanElements = keplerianElements;
