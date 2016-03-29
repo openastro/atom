@@ -144,7 +144,7 @@ int computeCartesianToTwoLineElementResiduals( const gsl_vector* independentVari
 
 //! Compute initial guess for TLE mean elements.
 /*
- * Computes initial guess for TLE mean elements by converting Keplerian elements provided by user
+ * Computes initial guess for TLE mean elements by converting Keplerian elements provided by user to
  * TLE mean elements. The TLE mean elements generated are to floating-point precision, since the
  * TLE class stores the internal values as doubles.
  *
@@ -168,7 +168,7 @@ int computeCartesianToTwoLineElementResiduals( const gsl_vector* independentVari
  *                                      - mean eccentricity                                     [-]
  *                                      - mean argument of perigee                            [deg]
  *                                      - mean mean anomaly                                   [deg]
- *                                      - mean mean motion                                [rev/deg]
+ *                                      - mean mean motion                                [rev/day]
  */
 template< typename Real, typename Vector6 >
 const Vector6 computeInitialGuessTleMeanElements( const Vector6& keplerianElements,
@@ -263,6 +263,7 @@ const Tle convertCartesianStateToTwoLineElements(
         // Check if solver is stuck; if it is stuck, break from loop.
         if ( solverStatus )
         {
+            solverStatusSummary = summary.str( );
             throw std::runtime_error( "ERROR: Non-linear solver is stuck!" );
         }
 
@@ -387,7 +388,7 @@ const Vector6 computeInitialGuessTleMeanElements( const Vector6& keplerianElemen
     // Compute mean inclination [deg].
     tleMeanElements[ 0 ]
     = sml::computeModulo(
-        sml::convertRadiansToDegrees( keplerianElements[ astro::inclinationIndex ] ), 360.0 );
+        sml::convertRadiansToDegrees( keplerianElements[ astro::inclinationIndex ] ), 180.0 );
 
     // Compute mean right ascending node [deg].
     tleMeanElements[ 1 ]
