@@ -262,7 +262,7 @@ const std::pair< Vector3, Vector3 > executeAtomSolver(
     solverStatusSummary = summary.str( );
 
     // Store final departure velocity.
-    Vector3 departureVelocity( 3 );
+    Vector3 departureVelocity = departureVelocityGuess;
     for ( int i = 0; i < 3; i++ )
     {
         departureVelocity[ i ] = gsl_vector_get( solver->x, i );
@@ -299,7 +299,7 @@ const std::pair< Vector3, Vector3 > executeAtomSolver(
     DateTime arrivalEpoch = departureEpoch.AddSeconds( timeOfFlight );
     Eci arrivalState = sgp4.FindPosition( arrivalEpoch );
 
-    Vector3 arrivalVelocity( 3 );
+    Vector3 arrivalVelocity = departureVelocity;
     arrivalVelocity[ 0 ] = arrivalState.Velocity( ).x;
     arrivalVelocity[ 1 ] = arrivalState.Velocity( ).y;
     arrivalVelocity[ 2 ] = arrivalState.Velocity( ).z;
